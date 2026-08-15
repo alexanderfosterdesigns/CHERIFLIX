@@ -2,6 +2,9 @@ name: Build installable beta APK
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - arena/01a004cd-cheriflix
 
 permissions:
   contents: read
