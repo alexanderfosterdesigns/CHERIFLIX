@@ -1,1 +1,100 @@
+name: Build installable beta APK
 
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - arena/01a004cd-cheriflix
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      JAVA_VERSION: "17"
+      FLUTTER_VERSION: "3.35.7"
+      KEYSTORE_PASSWORD: cheriflix-beta
+      KEY_ALIAS: cheriflix-beta
+    steps:
+      - name: Check out this branch
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: gradle
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Create one-time beta signing key
+        run: |
+          keytool -genkeypair -v \
+            -keystore android/beta-upload.jks \
+            -storepass "$KEYSTORE_PASSWORD" \
+            -keypass "$KEYSTORE_PASSWORD" \
+            -alias "$KEY_ALIAS" \
+            -keyalg RSA -keysize 2048 -validity 3650 \
+            -dname "CN=Cheriflix Beta, OU=Beta, O=Cheriflix, L=Unknown, ST=Unknown, C=US"
+          cat > android/key.properties <<EOF
+          storePassword=$KEYSTORE_PASSWORD
+          keyPassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=beta-upload.jks
+          EOF
+
+      - name: Build universal Android TV release APK
+        run: >-
+          flutter build apk --release
+          --target-platform android-arm,android-arm64,android-x64
+
+      - name: Stage installable APK
+        run: |
+          mkdir -p apk
+          cp build/app/outputs/flutter-apk/app-release.apk apk/Cheriflix-Beta.apk
+
+      - name: Verify APK signature and package contents
+        run: |
+          BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
+          "$BUILD_TOOLS/apksigner" verify --verbose --print-certs apk/Cheriflix-Beta.apk
+          "$BUILD_TOOLS/aapt" dump badging apk/Cheriflix-Beta.apk | tee /tmp/badging.txt
+          grep -q "package: name='app.cheriflix.tv'" /tmp/badging.txt
+          grep -q "application-label:'Cheriflix'" /tmp/badging.txt
+          grep -q "banner='" /tmp/badging.txt
+          python3 - <<'PY'
+          from zipfile import ZipFile
+          apk = "apk/Cheriflix-Beta.apk"
+          expected = ("armeabi-v7a", "arm64-v8a", "x86_64")
+          with ZipFile(apk) as archive:
+              names = set(archive.namelist())
+          for abi in expected:
+              for library in ("libapp.so", "libflutter.so"):
+                  path = f"lib/{abi}/{library}"
+                  if path not in names:
+                      raise SystemExit(f"Missing required APK entry: {path}")
+          print("Verified Flutter runtime libraries for: " + ", ".join(expected))
+          PY
+          sha256sum apk/Cheriflix-Beta.apk | tee apk/Cheriflix-Beta.apk.sha256
+
+      - name: Upload installable beta
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cheriflix-Beta
+          path: |
+            apk/Cheriflix-Beta.apk
+            apk/Cheriflix-Beta.apk.sha256
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
