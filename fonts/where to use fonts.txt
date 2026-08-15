@@ -1,0 +1,19 @@
+Here's your Codex prompt:
+
+For an app that feels polished and consistent, use your Netflix Sans family like this:
+Hero title / featured title over artwork: Bold
+Row titles / section headings like "Trending", "Continue Watching": Bold
+Movie / episode titles in cards: Medium or Bold
+Buttons / tabs / nav labels: Medium
+Metadata like year, rating, runtime, season number: Medium or Light at larger sizes
+Body text / descriptions / synopses: Light or Medium
+Tiny helper text like status labels or secondary hints: Light, only where text is large enough and high contrast
+Avoid stacking multiple weights in the same component — pick one and commit to it
+H1 / featured title:     Netflix Sans Bold,   28–40sp
+H2 / row heading:        Netflix Sans Bold,   18–22sp
+Card title:              Netflix Sans Medium, 15–17sp
+Body / synopsis:         Netflix Sans Light,  14–16sp
+Meta text:               Netflix Sans Medium, 12–13sp
+Buttons / tabs:          Netflix Sans Medium, 13–15sp
+Subtitles:               Consolas Regular,    16–18sp, white, no background,
+                         strong drop shadow, 95% opacity

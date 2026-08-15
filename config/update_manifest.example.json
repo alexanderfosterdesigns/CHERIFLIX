@@ -1,0 +1,8 @@
+{
+  "version": "1.0.1",
+  "minimum_app_version": "1.0.0",
+  "package_url": "https://updates.example.com/cheriflix/1.0.1/package.zip",
+  "sha256": "hex-checksum",
+  "release_notes": "Short notes",
+  "published_at": "2026-03-07T00:00:00Z"
+}

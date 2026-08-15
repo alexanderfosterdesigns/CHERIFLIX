@@ -1,0 +1,30 @@
+{
+  "provider_priority": [
+    "vidking",
+    "vixsrc",
+    "vidapi",
+    "vidnest",
+    "vidapi_xyz",
+    "vidsrc_xyz",
+    "111movies_com",
+    "autoembed_cc",
+    "vidsrc_cc",
+    "vidsrc",
+    "embedsu",
+    "vsembed",
+    "vsrcsu",
+    "vidsrcme",
+    "vidlink",
+    "111movies",
+    "vidsrc_embed",
+    "videasy",
+    "vidzee",
+    "2embed",
+    "mapple",
+    "primesrc",
+    "multiembed",
+    "autoembed"
+  ],
+  "provider_timeout_seconds": 8,
+  "disabled_providers": []
+}

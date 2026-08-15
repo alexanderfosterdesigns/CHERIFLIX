@@ -1,0 +1,7 @@
+name: cheriflix_caption_service
+description: Lightweight caption resolver and auto-English generation backend for CHERIFLIX.
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+

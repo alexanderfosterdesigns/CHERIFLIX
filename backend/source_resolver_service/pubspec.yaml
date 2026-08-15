@@ -1,0 +1,9 @@
+name: cheriflix_source_resolver_service
+description: Lightweight source resolver backend for CHERIFLIX embed playback.
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dev_dependencies:
+  test: ^1.25.8

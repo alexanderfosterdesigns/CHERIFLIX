@@ -20,6 +20,13 @@ coverage/
 *.aab
 .tooling/
 .pub-cache/
+.android-sdk/
+.artifacts/
+.tmp/
+.agents/
+.zcode/
+.codex-remote-attachments/
+.git-wrapper-bin/
 .appdata/
 .localappdata/
 cheriflix.iml
@@ -35,3 +42,7 @@ AppData/
 android/key.properties
 *.jks
 *.keystore
+
+# Generated .NET updater output
+**/bin/
+**/obj/
