@@ -70,8 +70,8 @@ jobs:
           BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
           "$BUILD_TOOLS/apksigner" verify --verbose --print-certs apk/Cheriflix-Beta.apk
           "$BUILD_TOOLS/aapt" dump badging apk/Cheriflix-Beta.apk | tee /tmp/badging.txt
-          grep -q "package: name='app.cheriflix.tv'" /tmp/badging.txt
-          grep -q "application-label:'Cheriflix'" /tmp/badging.txt
+          grep -q "package: name='app.cheriflix.tv.beta'" /tmp/badging.txt
+          grep -q "application-label:'Cheriflix Beta'" /tmp/badging.txt
           grep -q "banner='" /tmp/badging.txt
           python3 - <<'PY'
           from zipfile import ZipFile
