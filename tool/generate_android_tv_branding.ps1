@@ -143,6 +143,33 @@ try {
             $bannerGraphics.DrawImage($sourceIcon, $iconRect, $sourceCropRect, [System.Drawing.GraphicsUnit]::Pixel)
         }
 
+        # Keep the Cheriflix wordmark intact while making the TV launcher tile
+        # unmistakably identifiable as the beta application.
+        $betaRect = [System.Drawing.Rectangle]::new(246, 138, 58, 25)
+        $betaBrush = [System.Drawing.SolidBrush]::new(
+            [System.Drawing.ColorTranslator]::FromHtml("#FFE50914")
+        )
+        $betaTextBrush = [System.Drawing.SolidBrush]::new([System.Drawing.Color]::White)
+        $betaFont = [System.Drawing.Font]::new(
+            [System.Drawing.FontFamily]::GenericSansSerif,
+            11,
+            [System.Drawing.FontStyle]::Bold,
+            [System.Drawing.GraphicsUnit]::Pixel
+        )
+        $betaFormat = [System.Drawing.StringFormat]::new()
+        try {
+            $betaFormat.Alignment = [System.Drawing.StringAlignment]::Center
+            $betaFormat.LineAlignment = [System.Drawing.StringAlignment]::Center
+            $bannerGraphics.FillRectangle($betaBrush, $betaRect)
+            $bannerGraphics.DrawString("BETA", $betaFont, $betaTextBrush, $betaRect, $betaFormat)
+        }
+        finally {
+            $betaFormat.Dispose()
+            $betaFont.Dispose()
+            $betaTextBrush.Dispose()
+            $betaBrush.Dispose()
+        }
+
         $bannerPath = Join-Path -Path $resolvedAndroidResPath -ChildPath $BannerOutput
         Save-Png -Bitmap $bannerBitmap -Path $bannerPath
     }

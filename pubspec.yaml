@@ -2,7 +2,7 @@ name: cheriflix
 description: CHERIFLIX Windows-first streaming app scaffold.
 publish_to: 'none'
 
-version: 0.1.57-beta.1+58
+version: 0.1.58-beta.1+59
 
 environment:
   sdk: '>=3.5.0 <4.0.0'

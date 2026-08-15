@@ -796,6 +796,50 @@ void main() {
     await tester.pumpAndSettle();
     expect(_bodyScrollOffset(tester), closeTo(beforeHorizontalMove, 0.5));
   });
+  testWidgets(
+      'HomeScreen keeps rail slot geometry fixed while a card expands in the overlay',
+      (tester) async {
+    final featured = _media(
+      tmdbId: 780,
+      mediaType: MediaType.movie,
+      title: 'Stable Hero',
+    );
+    final railItems = List<MediaSummary>.generate(
+      6,
+      (index) => _media(
+        tmdbId: 781 + index,
+        mediaType: MediaType.movie,
+        title: 'Stable Card $index',
+      ),
+    );
+    await _pumpHome(
+      tester,
+      service: _FakeCatalogService(
+        _catalog(
+          featured: featured,
+          newOnStreaming: railItems,
+          trending: railItems,
+          popularMovies: railItems,
+          popularSeries: const <MediaSummary>[],
+          newAndPopular: railItems,
+        ),
+      ),
+    );
+
+    final card = find.byKey(
+      ValueKey<String>(
+        'home_rail_New On Streaming_${railItems.first.saveKey}_0',
+      ),
+    );
+    final widthBeforeFocus = tester.getSize(card).width;
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+    await tester.pump(const Duration(milliseconds: 220));
+
+    expect(_primaryFocusLabel(), 'HomeFirstRail');
+    expect(tester.getSize(card).width, closeTo(widthBeforeFocus, 0.1));
+  });
+
   testWidgets('HomeScreen reuses its loaded catalog when browse tabs change',
       (tester) async {
     final featured = _media(

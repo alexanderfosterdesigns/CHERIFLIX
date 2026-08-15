@@ -79,15 +79,29 @@ class PlaybackProgressEntry {
   }
 
   String get displaySubtitle {
+    final remaining = _remainingLabel;
     if (!isEpisode) {
-      return summary.metadataLabel;
+      return <String>[
+        summary.metadataLabel,
+        if (remaining != null) remaining,
+      ].join('  •  ');
     }
 
     final label = episodeLabel;
-    if (label == null) {
-      return summary.title;
+    final episodeContext = label == null ? summary.title : '$label  ${summary.title}';
+    return <String>[
+      episodeContext,
+      if (remaining != null) remaining,
+    ].join('  •  ');
+  }
+
+  String? get _remainingLabel {
+    if (totalDuration <= Duration.zero || position >= totalDuration) {
+      return null;
     }
-    return '$label  ${summary.title}';
+    final remainingMinutes =
+        ((totalDuration - position).inSeconds / 60).ceil().clamp(1, 9999);
+    return '${remainingMinutes}m left';
   }
 
   String? get artworkPath {

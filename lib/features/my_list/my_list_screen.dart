@@ -121,7 +121,7 @@ class _MyListScreenState extends State<MyListScreen> {
       onBack: widget.onBack,
       child: CheriflixScaffold(
         topBar: CheriflixTopBar(
-          activeTab: 'MY LIST',
+          activeTab: 'My List',
           profile: widget.activeProfile,
           downFallbackNodes: firstContentFocusNode == null
               ? const <FocusNode>[]
@@ -237,8 +237,9 @@ class _MyListScreenState extends State<MyListScreen> {
           height: _railHeight,
           child: ListView.separated(
             clipBehavior: Clip.none,
-            physics: const NeverScrollableScrollPhysics(),
+            physics: const ClampingScrollPhysics(),
             scrollDirection: Axis.horizontal,
+            cacheExtent: _cardWidth * 3,
             padding: EdgeInsets.zero,
             itemCount: cards.length,
             separatorBuilder: (_, __) => SizedBox(width: _cardGap),

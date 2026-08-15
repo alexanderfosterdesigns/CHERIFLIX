@@ -27,6 +27,8 @@ class TmdbMediaCatalogService implements MediaCatalogService {
       <String, TmdbTitleLogo?>{};
   final Map<String, Future<TmdbTitleLogo?>> _logoRequests =
       <String, Future<TmdbTitleLogo?>>{};
+  final Map<String, Future<Object?>> _inFlightCacheRequests =
+      <String, Future<Object?>>{};
 
   static const Duration _homeTtl = Duration(hours: 1);
   static const Duration _justReleasedTtl = Duration(hours: 1);
@@ -852,20 +854,35 @@ class TmdbMediaCatalogService implements MediaCatalogService {
     required Future<T> Function() fetch,
     required String Function(T value) encode,
   }) async {
-    final cached = await cacheStore.read(key: key);
-    if (cached != null && cached.isFresh(maxAge)) {
-      return decode(cached.payload);
+    final inFlight = _inFlightCacheRequests[key];
+    if (inFlight != null) {
+      return (await inFlight) as T;
     }
 
-    try {
-      final value = await fetch();
-      await cacheStore.write(key: key, payload: encode(value));
-      return value;
-    } catch (_) {
-      if (cached != null) {
+    final request = () async {
+      final cached = await cacheStore.read(key: key);
+      if (cached != null && cached.isFresh(maxAge)) {
         return decode(cached.payload);
       }
-      rethrow;
+
+      try {
+        final value = await fetch();
+        await cacheStore.write(key: key, payload: encode(value));
+        return value;
+      } catch (_) {
+        if (cached != null) {
+          return decode(cached.payload);
+        }
+        rethrow;
+      }
+    }();
+    _inFlightCacheRequests[key] = request;
+    try {
+      return (await request) as T;
+    } finally {
+      if (identical(_inFlightCacheRequests[key], request)) {
+        _inFlightCacheRequests.remove(key);
+      }
     }
   }
 }

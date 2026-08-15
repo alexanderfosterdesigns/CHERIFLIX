@@ -27,7 +27,7 @@ class CheriflixApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'CHERIFLIX',
+      title: 'Cheriflix Beta',
       theme: buildCheriflixTheme(),
       scrollBehavior: const _CheriflixScrollBehavior(),
       debugShowCheckedModeBanner: false,
