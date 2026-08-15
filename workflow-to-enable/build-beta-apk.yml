@@ -39,20 +39,21 @@ jobs:
       - name: Resolve dependencies
         run: flutter pub get
 
-      - name: Create one-time beta signing key
+      - name: Restore persistent beta signing key
+        env:
+          BETA_KEYSTORE_BASE64: ${{ secrets.CHERIFLIX_BETA_KEYSTORE_BASE64 }}
         run: |
-          keytool -genkeypair -v \
-            -keystore android/beta-upload.jks \
-            -storepass "$KEYSTORE_PASSWORD" \
-            -keypass "$KEYSTORE_PASSWORD" \
-            -alias "$KEY_ALIAS" \
-            -keyalg RSA -keysize 2048 -validity 3650 \
-            -dname "CN=Cheriflix Beta, OU=Beta, O=Cheriflix, L=Unknown, ST=Unknown, C=US"
+          if [ -z "$BETA_KEYSTORE_BASE64" ]; then
+            echo "Missing repository secret: CHERIFLIX_BETA_KEYSTORE_BASE64" >&2
+            exit 1
+          fi
+          printf '%s' "$BETA_KEYSTORE_BASE64" | base64 --decode > android/beta-upload.p12
           cat > android/key.properties <<EOF
           storePassword=$KEYSTORE_PASSWORD
           keyPassword=$KEYSTORE_PASSWORD
           keyAlias=$KEY_ALIAS
-          storeFile=beta-upload.jks
+          storeFile=beta-upload.p12
+          storeType=PKCS12
           EOF
 
       - name: Build universal Android TV release APK
