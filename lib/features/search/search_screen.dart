@@ -343,9 +343,9 @@ class _SearchScreenState extends State<SearchScreen> {
           width: double.infinity,
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: const Color(0xFF101010),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0x28FFFFFF)),
+              color: const Color(0xFF0A0A0A),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0x18FFFFFF), width: 0.5),
             ),
             child: Padding(
               padding: EdgeInsets.symmetric(

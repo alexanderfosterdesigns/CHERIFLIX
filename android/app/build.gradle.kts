@@ -32,7 +32,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "app.cheriflix.tv"
+        applicationId = "app.cheriflix.tv.beta"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -48,6 +48,7 @@ android {
                 keyPassword = keystoreProperties["keyPassword"] as String
                 storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
                 storePassword = keystoreProperties["storePassword"] as String
+                storeType = keystoreProperties.getProperty("storeType", "JKS")
                 enableV1Signing = true
                 enableV2Signing = true
                 enableV3Signing = true

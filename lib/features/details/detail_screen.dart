@@ -553,22 +553,22 @@ class _DetailScreenState extends State<DetailScreen> {
     return Container(
       key: const ValueKey<String>('detail_lower_shelf'),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: const Color(0x16FFFFFF)),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0x0EFFFFFF)),
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: <Color>[
-            Color(0xB8181818),
-            Color(0x9E141414),
-            Color(0x86101010),
+            Color(0xA0101010),
+            Color(0x880D0D0D),
+            Color(0x700A0A0A),
           ],
         ),
         boxShadow: const <BoxShadow>[
           BoxShadow(
-            color: Color(0x66000000),
-            blurRadius: 22,
-            offset: Offset(0, 12),
+            color: Color(0x44000000),
+            blurRadius: 18,
+            offset: Offset(0, 8),
           ),
         ],
       ),
@@ -1379,23 +1379,24 @@ class _MetaBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xA6171717),
+        color: const Color(0x880E0E0E),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: const Color(0x2EFFFFFF)),
+        border: Border.all(color: const Color(0x18FFFFFF), width: 0.5),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           if (icon != null) ...<Widget>[
-            Icon(icon, size: 16, color: CheriflixColors.textPrimary),
-            const SizedBox(width: 6),
+            Icon(icon, size: 14, color: const Color(0xBBF0F0F0)),
+            const SizedBox(width: 5),
           ],
           Text(
             label,
             style: CheriflixTypography.metadata.copyWith(
-              color: CheriflixColors.textPrimary,
+              color: const Color(0xBBF0F0F0),
+              fontSize: 12,
             ),
           ),
         ],
@@ -1474,50 +1475,53 @@ class _DetailTabButtonState extends State<_DetailTabButton> {
           },
           child: GestureDetector(
             onTap: widget.onPressed,
-            child: AnimatedContainer(
-              key: ValueKey<String>('detail_tab_surface_${widget.label}'),
-              duration: const Duration(milliseconds: 140),
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-              decoration: BoxDecoration(
-                color: widget.selected
-                    ? const Color(0xFF2B2B2B)
-                    : const Color(0x14111111),
-                border: Border.all(
-                  color: _focused
-                      ? CheriflixColors.focus
-                      : widget.selected
-                          ? const Color(0x30FFFFFF)
-                          : Colors.transparent,
-                  width: _focused ? 2 : 1,
+              child: AnimatedContainer(
+                key: ValueKey<String>('detail_tab_surface_${widget.label}'),
+                duration: const Duration(milliseconds: 160),
+                curve: Curves.easeOutCubic,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  color: widget.selected
+                      ? const Color(0xFF1A1A1A)
+                      : const Color(0x08111111),
+                  border: Border.all(
+                    color: _focused
+                        ? const Color(0x44FFFFFF)
+                        : widget.selected
+                            ? const Color(0x20FFFFFF)
+                            : Colors.transparent,
+                    width: _focused ? 1.5 : 1,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    widget.label,
-                    style: CheriflixTypography.button.copyWith(
-                      color: widget.selected
-                          ? CheriflixColors.textPrimary
-                          : const Color(0xE6FFFFFF),
-                      letterSpacing: 0.35,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      widget.label,
+                      style: CheriflixTypography.button.copyWith(
+                        color: widget.selected
+                            ? CheriflixColors.textPrimary
+                            : const Color(0xBBF0F0F0),
+                        letterSpacing: 0.35,
+                        fontSize: 13,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 140),
-                    width: 92,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: widget.selected
-                          ? CheriflixColors.accentRed
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(999),
+                    const SizedBox(height: 8),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 160),
+                      curve: Curves.easeOutCubic,
+                      width: 80,
+                      height: 3,
+                      decoration: BoxDecoration(
+                        color: widget.selected
+                            ? CheriflixColors.accentRed
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
             ),
           ),
         ),
@@ -1599,30 +1603,31 @@ class _DetailIconActionButtonState extends State<_DetailIconActionButton> {
             child: GestureDetector(
               onTap: widget.onPressed,
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 140),
-                width: 64,
-                height: 64,
+                duration: const Duration(milliseconds: 160),
+                curve: Curves.easeOutCubic,
+                width: 56,
+                height: 56,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: _focused ? Colors.white : const Color(0xFF2B2B2B),
+                  color: _focused ? const Color(0xFFF0F0F0) : const Color(0xFF1A1A1A),
                   border: Border.all(
                     color: _focused
-                        ? Colors.white
+                        ? const Color(0xF0FFFFFF)
                         : widget.selected
-                            ? CheriflixColors.accentRedMuted
-                            : const Color(0x36FFFFFF),
-                    width: 2,
+                            ? const Color(0x66CC1020)
+                            : const Color(0x1AFFFFFF),
+                    width: _focused ? 1.5 : 1,
                   ),
                   boxShadow: <BoxShadow>[
                     const BoxShadow(
-                      color: Color(0x60000000),
-                      blurRadius: 16,
-                      offset: Offset(0, 8),
+                      color: Color(0x33000000),
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
                     ),
                     if (widget.selected && !_focused)
                       const BoxShadow(
-                        color: Color(0x40E50914),
-                        blurRadius: 14,
+                        color: Color(0x22E50914),
+                        blurRadius: 10,
                         spreadRadius: 1,
                       ),
                   ],
@@ -1633,8 +1638,8 @@ class _DetailIconActionButtonState extends State<_DetailIconActionButton> {
                       ? Colors.black
                       : widget.selected
                           ? CheriflixColors.accentRed
-                          : CheriflixColors.textPrimary,
-                  size: 28,
+                          : const Color(0xBBF0F0F0),
+                  size: 24,
                 ),
               ),
             ),

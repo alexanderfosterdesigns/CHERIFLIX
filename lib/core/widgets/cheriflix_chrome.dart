@@ -49,14 +49,14 @@ class CheriflixBackdrop extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: const BoxDecoration(
-        color: CheriflixColors.background,
+        color: Color(0xFF080808),
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: <Color>[
-            Color(0xFF070707),
-            CheriflixColors.background,
-            Color(0xFF101010),
+            Color(0xFF060606),
+            Color(0xFF0B0B0B),
+            Color(0xFF090909),
           ],
         ),
       ),
@@ -131,165 +131,177 @@ class CheriflixTopBar extends StatelessWidget {
     return RepaintBoundary(
       child: DecoratedBox(
         decoration: const BoxDecoration(
-          color: CheriflixColors.nav,
-          border: Border(
-            top: BorderSide(color: Color(0x1AFFFFFF)),
-            bottom: BorderSide(color: Color(0x14FFFFFF)),
-          ),
+          color: Color(0x00000000),
         ),
-        child: Padding(
-          padding: layout.topBarPadding,
-          child: Row(
-            children: <Widget>[
-              CheriflixLogo(height: layout.topBarLogoHeight),
-              if (showTabs) ...<Widget>[
-                SizedBox(width: layout.topBarTabSpacing),
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: <Widget>[
-                        _buildTab(
-                          context,
-                          'Home',
-                          onHome,
-                          focusNode: homeFocusNode,
-                          leftFallbackNodes: _leftFallbackNodesFor(
-                            homeFocusNode,
-                            orderedFocusNodes,
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: <Color>[
+                Color(0xF5080808),
+                Color(0xF0080808),
+                Color(0xE0080808),
+                Color(0xC0080808),
+                Color(0x00000000),
+              ],
+              stops: <double>[0, 0.4, 0.7, 0.92, 1.0],
+            ),
+          ),
+          child: Padding(
+            padding: layout.topBarPadding,
+            child: Row(
+              children: <Widget>[
+                CheriflixLogo(height: layout.topBarLogoHeight),
+                if (showTabs) ...<Widget>[
+                  SizedBox(width: layout.topBarTabSpacing),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: <Widget>[
+                          _buildTab(
+                            context,
+                            'Home',
+                            onHome,
+                            focusNode: homeFocusNode,
+                            leftFallbackNodes: _leftFallbackNodesFor(
+                              homeFocusNode,
+                              orderedFocusNodes,
+                            ),
+                            rightFallbackNodes: _rightFallbackNodesFor(
+                              homeFocusNode,
+                              orderedFocusNodes,
+                            ),
                           ),
-                          rightFallbackNodes: _rightFallbackNodesFor(
-                            homeFocusNode,
-                            orderedFocusNodes,
+                          _buildTab(
+                            context,
+                            'TV Shows',
+                            onTvShows,
+                            focusNode: tvShowsFocusNode,
+                            leftFallbackNodes: _leftFallbackNodesFor(
+                              tvShowsFocusNode,
+                              orderedFocusNodes,
+                            ),
+                            rightFallbackNodes: _rightFallbackNodesFor(
+                              tvShowsFocusNode,
+                              orderedFocusNodes,
+                            ),
                           ),
-                        ),
-                        _buildTab(
-                          context,
-                          'TV Shows',
-                          onTvShows,
-                          focusNode: tvShowsFocusNode,
-                          leftFallbackNodes: _leftFallbackNodesFor(
-                            tvShowsFocusNode,
-                            orderedFocusNodes,
+                          _buildTab(
+                            context,
+                            'Movies',
+                            onMovies,
+                            focusNode: moviesFocusNode,
+                            leftFallbackNodes: _leftFallbackNodesFor(
+                              moviesFocusNode,
+                              orderedFocusNodes,
+                            ),
+                            rightFallbackNodes: _rightFallbackNodesFor(
+                              moviesFocusNode,
+                              orderedFocusNodes,
+                            ),
                           ),
-                          rightFallbackNodes: _rightFallbackNodesFor(
-                            tvShowsFocusNode,
-                            orderedFocusNodes,
+                          _buildTab(
+                            context,
+                            'New & Popular',
+                            onNewPopular,
+                            focusNode: newPopularFocusNode,
+                            leftFallbackNodes: _leftFallbackNodesFor(
+                              newPopularFocusNode,
+                              orderedFocusNodes,
+                            ),
+                            rightFallbackNodes: _rightFallbackNodesFor(
+                              newPopularFocusNode,
+                              orderedFocusNodes,
+                            ),
                           ),
-                        ),
-                        _buildTab(
-                          context,
-                          'Movies',
-                          onMovies,
-                          focusNode: moviesFocusNode,
-                          leftFallbackNodes: _leftFallbackNodesFor(
-                            moviesFocusNode,
-                            orderedFocusNodes,
+                          _buildTab(
+                            context,
+                            'My List',
+                            onMyList,
+                            focusNode: myListFocusNode,
+                            leftFallbackNodes: _leftFallbackNodesFor(
+                              myListFocusNode,
+                              orderedFocusNodes,
+                            ),
+                            rightFallbackNodes: _rightFallbackNodesFor(
+                              myListFocusNode,
+                              orderedFocusNodes,
+                            ),
                           ),
-                          rightFallbackNodes: _rightFallbackNodesFor(
-                            moviesFocusNode,
-                            orderedFocusNodes,
-                          ),
-                        ),
-                        _buildTab(
-                          context,
-                          'New & Popular',
-                          onNewPopular,
-                          focusNode: newPopularFocusNode,
-                          leftFallbackNodes: _leftFallbackNodesFor(
-                            newPopularFocusNode,
-                            orderedFocusNodes,
-                          ),
-                          rightFallbackNodes: _rightFallbackNodesFor(
-                            newPopularFocusNode,
-                            orderedFocusNodes,
-                          ),
-                        ),
-                        _buildTab(
-                          context,
-                          'My List',
-                          onMyList,
-                          focusNode: myListFocusNode,
-                          leftFallbackNodes: _leftFallbackNodesFor(
-                            myListFocusNode,
-                            orderedFocusNodes,
-                          ),
-                          rightFallbackNodes: _rightFallbackNodesFor(
-                            myListFocusNode,
-                            orderedFocusNodes,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ] else
-                const Spacer(),
-              if (showActions) ...<Widget>[
-                Container(
-                  width: 1,
-                  height: layout.topBarDividerHeight,
-                  color: const Color(0x16FFFFFF),
-                ),
-                SizedBox(
-                    width: layout.value(compact: 10, standard: 12, wide: 14)),
-                _buildAction(
-                  context: context,
-                  icon: Icons.search_rounded,
-                  label: 'Search',
-                  onPressed: onSearch,
-                  onFocusChanged: onControlFocusChanged,
-                  focusNode: searchFocusNode,
-                  leftFallbackNodes: _leftFallbackNodesFor(
-                    searchFocusNode,
-                    orderedFocusNodes,
+                ] else
+                  const Spacer(),
+                if (showActions) ...<Widget>[
+                  Container(
+                    width: 1,
+                    height: layout.topBarDividerHeight,
+                    color: const Color(0x0CFFFFFF),
                   ),
-                  rightFallbackNodes: _rightFallbackNodesFor(
-                    searchFocusNode,
-                    orderedFocusNodes,
+                  SizedBox(
+                      width: layout.value(compact: 10, standard: 12, wide: 14)),
+                  _buildAction(
+                    context: context,
+                    icon: Icons.search_rounded,
+                    label: 'Search',
+                    onPressed: onSearch,
+                    onFocusChanged: onControlFocusChanged,
+                    focusNode: searchFocusNode,
+                    leftFallbackNodes: _leftFallbackNodesFor(
+                      searchFocusNode,
+                      orderedFocusNodes,
+                    ),
+                    rightFallbackNodes: _rightFallbackNodesFor(
+                      searchFocusNode,
+                      orderedFocusNodes,
+                    ),
                   ),
-                ),
-                SizedBox(width: layout.value(compact: 4, standard: 6)),
-                _buildAction(
-                  context: context,
-                  icon: Icons.settings_rounded,
-                  label: 'Settings',
-                  onPressed: onSettings,
-                  onFocusChanged: onControlFocusChanged,
-                  focusNode: settingsFocusNode,
-                  leftFallbackNodes: _leftFallbackNodesFor(
-                    settingsFocusNode,
-                    orderedFocusNodes,
+                  SizedBox(width: layout.value(compact: 4, standard: 6)),
+                  _buildAction(
+                    context: context,
+                    icon: Icons.settings_rounded,
+                    label: 'Settings',
+                    onPressed: onSettings,
+                    onFocusChanged: onControlFocusChanged,
+                    focusNode: settingsFocusNode,
+                    leftFallbackNodes: _leftFallbackNodesFor(
+                      settingsFocusNode,
+                      orderedFocusNodes,
+                    ),
+                    rightFallbackNodes: _rightFallbackNodesFor(
+                      settingsFocusNode,
+                      orderedFocusNodes,
+                    ),
                   ),
-                  rightFallbackNodes: _rightFallbackNodesFor(
-                    settingsFocusNode,
-                    orderedFocusNodes,
-                  ),
-                ),
-                SizedBox(width: layout.value(compact: 6, standard: 8)),
-                onProfiles == null
-                    ? CheriflixPassiveProfilePill(
-                        avatarLabel: profile?.avatarLabel ?? 'C',
-                        compact: true,
-                      )
-                    : TvProfileButton(
-                        avatarLabel: profile?.avatarLabel ?? 'C',
-                        onPressed: onProfiles,
-                        style: TvProfileButtonStyle.topBarCompact,
-                        focusNode: profilesFocusNode,
-                        downFallbackNodes: downFallbackNodes,
-                        leftFallbackNodes: _leftFallbackNodesFor(
-                          profilesFocusNode,
-                          orderedFocusNodes,
+                  SizedBox(width: layout.value(compact: 6, standard: 8)),
+                  onProfiles == null
+                      ? CheriflixPassiveProfilePill(
+                          avatarLabel: profile?.avatarLabel ?? 'C',
+                          compact: true,
+                        )
+                      : TvProfileButton(
+                          avatarLabel: profile?.avatarLabel ?? 'C',
+                          onPressed: onProfiles,
+                          style: TvProfileButtonStyle.topBarCompact,
+                          focusNode: profilesFocusNode,
+                          downFallbackNodes: downFallbackNodes,
+                          leftFallbackNodes: _leftFallbackNodesFor(
+                            profilesFocusNode,
+                            orderedFocusNodes,
+                          ),
+                          rightFallbackNodes: _rightFallbackNodesFor(
+                            profilesFocusNode,
+                            orderedFocusNodes,
+                          ),
+                          onFocusChanged: onControlFocusChanged,
                         ),
-                        rightFallbackNodes: _rightFallbackNodesFor(
-                          profilesFocusNode,
-                          orderedFocusNodes,
-                        ),
-                        onFocusChanged: onControlFocusChanged,
-                      ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
@@ -518,20 +530,21 @@ class CheriflixNavPill extends StatelessWidget {
     }
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 180),
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOutCubic,
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
       decoration: BoxDecoration(
-        color: active ? Colors.white : const Color(0xFF101010),
-        borderRadius: BorderRadius.circular(15),
+        color: active ? Colors.white : const Color(0xFF0E0E0E),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: active ? Colors.white : const Color(0x26FFFFFF),
+          color: active ? Colors.white : const Color(0x18FFFFFF),
         ),
         boxShadow: active
             ? const <BoxShadow>[
                 BoxShadow(
-                  color: Color(0x22FFFFFF),
-                  blurRadius: 14,
-                  offset: Offset(0, 6),
+                  color: Color(0x18FFFFFF),
+                  blurRadius: 12,
+                  offset: Offset(0, 4),
                 ),
               ]
             : const <BoxShadow>[],
@@ -692,23 +705,26 @@ class CheriflixPanel extends StatelessWidget {
     final layout = CheriflixTvLayout.of(context);
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: const Color(0xEE1A1A1A),
+        color: const Color(0xD8111111),
         borderRadius: BorderRadius.circular(layout.panelRadius),
         border: Border.all(
-          color: const Color(0x18FFFFFF),
+          color: const Color(0x10FFFFFF),
           width: layout.panelBorderWidth,
         ),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: Color(0xA3000000),
+            color: const Color(0x52000000),
             blurRadius: layout.panelShadowBlur,
             offset: Offset(0, layout.panelShadowOffsetY),
           ),
         ],
       ),
-      child: Padding(
-        padding: padding,
-        child: child,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(layout.panelRadius),
+        child: Padding(
+          padding: padding,
+          child: child,
+        ),
       ),
     );
   }
@@ -800,12 +816,12 @@ class CheriflixProfileArtwork extends StatelessWidget {
       height: resolvedSize,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(borderRadius),
-        color: const Color(0xFF202A30),
+        color: const Color(0xFF141E24),
         boxShadow: const <BoxShadow>[
           BoxShadow(
-            color: Color(0x66000000),
-            blurRadius: 18,
-            offset: Offset(0, 10),
+            color: Color(0x44000000),
+            blurRadius: 16,
+            offset: Offset(0, 8),
           ),
         ],
       ),
