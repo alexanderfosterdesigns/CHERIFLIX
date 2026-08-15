@@ -1,0 +1,171 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter test test\embed_playback_provider_test.dart test\player_screen_test.dart
+
+## exception
+
+ProcessException: ProcessException: Access is denied (at ../../runtime/bin/process_win.cc:742)
+  Command: cmd.exe /c C:\Users\WATER\Documents\Codex\CHERIFLIX\.tooling\flutter\bin\cache\dart-sdk\bin\dart compile kernel --packages=C:\Users\WATER\Documents\Codex\CHERIFLIX\.dart_tool\package_config.json --output=C:\Users\WATER\Documents\Codex\CHERIFLIX\.dart_tool\hooks_runner\objective_c\8e04c28b44\hook.dill --depfile=C:\Users\WATER\Documents\Codex\CHERIFLIX\.dart_tool\hooks_runner\objective_c\8e04c28b44\hook.dill.d C:\Users\WATER\Documents\Codex\CHERIFLIX\.pub-cache\hosted\pub.dev\objective_c-9.3.0\hook\build.dart
+
+```
+#0      _ProcessImpl._start (dart:io-patch/process_patch.dart:411:33)
+#1      Process.start (dart:io-patch/process_patch.dart:42:20)
+#2      runProcess (package:hooks_runner/src/utils/run_process.dart:56:35)
+#3      NativeAssetsBuildRunner._compileHookForPackage.<anonymous closure> (package:hooks_runner/src/build_runner/build_runner.dart:819:35)
+#4      NativeAssetsBuildRunner._timeAsync (package:hooks_runner/src/build_runner/build_runner.dart:1118:28)
+#5      NativeAssetsBuildRunner._compileHookForPackage (package:hooks_runner/src/build_runner/build_runner.dart:806:8)
+#6      NativeAssetsBuildRunner._compileHookForPackageCached.<anonymous closure> (package:hooks_runner/src/build_runner/build_runner.dart:765:35)
+<asynchronous suspension>
+#7      NativeAssetsBuildRunner._timeAsync (package:hooks_runner/src/build_runner/build_runner.dart:1118:14)
+<asynchronous suspension>
+#8      NativeAssetsBuildRunner._runHookForPackageCached.<anonymous closure>.<anonymous closure> (package:hooks_runner/src/build_runner/build_runner.dart:426:35)
+<asynchronous suspension>
+#9      runUnderDirectoriesLock (package:hooks_runner/src/locking/locking.dart:19:12)
+<asynchronous suspension>
+#10     _runUnderFileLock (package:hooks_runner/src/locking/locking.dart:101:18)
+<asynchronous suspension>
+#11     runUnderDirectoriesLock (package:hooks_runner/src/locking/locking.dart:21:10)
+<asynchronous suspension>
+#12     _runUnderFileLock (package:hooks_runner/src/locking/locking.dart:101:18)
+<asynchronous suspension>
+#13     runUnderDirectoriesLock (package:hooks_runner/src/locking/locking.dart:21:10)
+<asynchronous suspension>
+#14     NativeAssetsBuildRunner._runHookForPackageCached.<anonymous closure> (package:hooks_runner/src/build_runner/build_runner.dart:417:17)
+<asynchronous suspension>
+#15     NativeAssetsBuildRunner._timeAsync (package:hooks_runner/src/build_runner/build_runner.dart:1118:14)
+<asynchronous suspension>
+#16     NativeAssetsBuildRunner.build.<anonymous closure> (package:hooks_runner/src/build_runner/build_runner.dart:194:22)
+<asynchronous suspension>
+#17     NativeAssetsBuildRunner._timeAsync (package:hooks_runner/src/build_runner/build_runner.dart:1118:14)
+<asynchronous suspension>
+#18     FlutterNativeAssetsBuildRunnerImpl.build (package:flutter_tools/src/isolated/native_assets/native_assets.dart:234:60)
+<asynchronous suspension>
+#19     _build (package:flutter_tools/src/isolated/native_assets/native_assets.dart:607:36)
+<asynchronous suspension>
+#20     _runDartHooks (package:flutter_tools/src/isolated/native_assets/native_assets.dart:534:37)
+<asynchronous suspension>
+#21     testCompilerBuildNativeAssets (package:flutter_tools/src/isolated/native_assets/test/native_assets.dart:70:42)
+<asynchronous suspension>
+#22     TestCommand.runCommand (package:flutter_tools/src/commands/test.dart:484:11)
+<asynchronous suspension>
+#23     FlutterCommand.run.<anonymous closure> (package:flutter_tools/src/runner/flutter_command.dart:1590:27)
+<asynchronous suspension>
+#24     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#25     CommandRunner.runCommand (package:args/command_runner.dart:212:13)
+<asynchronous suspension>
+#26     FlutterCommandRunner.runCommand.<anonymous closure> (package:flutter_tools/src/runner/flutter_command_runner.dart:497:9)
+<asynchronous suspension>
+#27     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#28     FlutterCommandRunner.runCommand (package:flutter_tools/src/runner/flutter_command_runner.dart:431:5)
+<asynchronous suspension>
+#29     FlutterCommandRunner.run.<anonymous closure> (package:flutter_tools/src/runner/flutter_command_runner.dart:307:33)
+<asynchronous suspension>
+#30     run.<anonymous closure>.<anonymous closure> (package:flutter_tools/runner.dart:104:11)
+<asynchronous suspension>
+#31     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#32     main (package:flutter_tools/executable.dart:103:3)
+<asynchronous suspension>
+```
+
+## flutter doctor
+
+```
+[☠] Flutter (the doctor check crashed)
+    ✗ Due to an error, the doctor check did not complete. If the error message below is not helpful, please let us know about this issue at https://github.com/flutter/flutter/issues.
+    ✗ Error: Flutter failed to run "where flutter". The flutter tool cannot access the file or directory.
+      Please ensure that the SDK and/or project is installed in a location that has read/write permissions for the current user.
+    • #0      throwToolExit (package:flutter_tools/src/base/common.dart:34:3)
+      #1      _throwFileSystemException (package:flutter_tools/src/base/error_handling_io.dart:828:3)
+      #2      _handleWindowsException (package:flutter_tools/src/base/error_handling_io.dart:818:3)
+      #3      _runSync (package:flutter_tools/src/base/error_handling_io.dart:572:7)
+      #4      ErrorHandlingProcessManager.runSync (package:flutter_tools/src/base/error_handling_io.dart:678:12)
+      #5      _WindowsUtils._which (package:flutter_tools/src/base/os.dart:506:50)
+      #6      OperatingSystemUtils.which (package:flutter_tools/src/base/os.dart:91:31)
+      #7      FlutterValidator._validateSdkBinary (package:flutter_tools/src/doctor.dart:662:52)
+      #8      FlutterValidator._validateRequiredBinaries (package:flutter_tools/src/doctor.dart:652:47)
+      #9      FlutterValidator.validateImpl (package:flutter_tools/src/doctor.dart:535:7)
+      #10     DoctorValidator.validate (package:flutter_tools/src/doctor_validator.dart:58:43)
+      #11     Doctor.startValidatorTasks.<anonymous closure> (package:flutter_tools/src/doctor.dart:202:72)
+      #12     asyncGuard.<anonymous closure> (package:flutter_tools/src/base/async_guard.dart:108:32)
+      #13     _rootRun (dart:async/zone_root.dart:35:13)
+      #14     _CustomZone.run (dart:async/zone.dart:726:19)
+      #15     _runZoned (dart:async/zone_api.dart:166:6)
+      #16     runZonedGuarded (dart:async/zone_api.dart:152:12)
+      #17     asyncGuard (package:flutter_tools/src/base/async_guard.dart:106:3)
+      #18     Doctor.startValidatorTasks (package:flutter_tools/src/doctor.dart:192:9)
+      #19     DoctorText._validatorTasks (package:flutter_tools/src/doctor.dart:799:60)
+      #20     DoctorText._validatorTasks (package:flutter_tools/src/doctor.dart)
+      #21     DoctorText._runDiagnosis (package:flutter_tools/src/doctor.dart:804:32)
+      #22     DoctorText.text (package:flutter_tools/src/doctor.dart:795:36)
+      #23     DoctorText.text (package:flutter_tools/src/doctor.dart)
+      #24     _createLocalCrashReport (package:flutter_tools/runner.dart:326:51)
+      #25     _handleToolErrorImpl (package:flutter_tools/runner.dart:287:31)
+      <asynchronous suspension>
+      #26     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+      <asynchronous suspension>
+      #27     main (package:flutter_tools/executable.dart:103:3)
+      <asynchronous suspension>
+
+
+[✗] Windows Version (Unable to determine Windows version (command `ver` returned Windows)) [9ms]
+
+[✗] Android toolchain - develop for Android devices [28ms]
+    • Android SDK at C:\Users\WATER\Documents\Codex\CHERIFLIX\.android-sdk-dummy
+    • Emulator version unknown
+    ✗ cmdline-tools component is missing.
+      Try installing or updating Android Studio.
+      Alternatively, download the tools from https://developer.android.com/studio#command-line-tools-only and make sure to set the ANDROID_HOME environment variable.
+      See https://developer.android.com/studio/command-line for more details.
+
+[✓] Chrome - develop for the web [7ms]
+    • Chrome at C:\Program Files\Google\Chrome\Application\chrome.exe
+
+[✗] Visual Studio - develop Windows apps [5ms]
+    ✗ Visual Studio not installed; this is necessary to develop Windows apps.
+      Download at https://visualstudio.microsoft.com/downloads/.
+      Please install the "Desktop development with C++" workload, including all of its default components
+
+[☠] Connected device (the doctor check crashed)
+    ✗ Due to an error, the doctor check did not complete. If the error message below is not helpful, please let us know about this issue at https://github.com/flutter/flutter/issues.
+    ✗ Error: Flutter failed to run "reg query HKEY_CURRENT_USER\Software\Microsoft\Edge\BLBeacon /v version". The flutter tool cannot access the file or directory.
+      Please ensure that the SDK and/or project is installed in a location that has read/write permissions for the current user.
+    • #0      throwToolExit (package:flutter_tools/src/base/common.dart:34:3)
+      #1      _throwFileSystemException (package:flutter_tools/src/base/error_handling_io.dart:828:3)
+      #2      _handleWindowsException (package:flutter_tools/src/base/error_handling_io.dart:818:3)
+      #3      _run (package:flutter_tools/src/base/error_handling_io.dart:534:7)
+      <asynchronous suspension>
+      #4      MicrosoftEdgeDevice._getSdkNameAndVersion (package:flutter_tools/src/web/web_device.dart:277:36)
+      <asynchronous suspension>
+      #5      MicrosoftEdgeDevice._meetsVersionConstraint (package:flutter_tools/src/web/web_device.dart:264:32)
+      <asynchronous suspension>
+      #6      WebDevices.pollingGetDevices (package:flutter_tools/src/web/web_device.dart:364:33)
+      <asynchronous suspension>
+      #7      PollingDeviceDiscovery._populateDevices (package:flutter_tools/src/device.dart:559:36)
+      <asynchronous suspension>
+      #8      Future.wait.<anonymous closure> (dart:async/future.dart:546:21)
+      <asynchronous suspension>
+      #9      DeviceManager.refreshAllDevices (package:flutter_tools/src/device.dart:202:40)
+      <asynchronous suspension>
+      #10     DeviceValidator.validateImpl (package:flutter_tools/src/doctor.dart:744:34)
+      <asynchronous suspension>
+      #11     DoctorValidator.validate (package:flutter_tools/src/doctor_validator.dart:58:37)
+      <asynchronous suspension>
+      #12     Future.any.onValue (dart:async/future.dart:637:5)
+      <asynchronous suspension>
+
+
+[!] Network resources [140ms]
+    ✗ A network error occurred while checking "https://pub.dev/": A request to send or receive data was disallowed because the socket is not connected and (when sending on a datagram socket using a sendto call) no address was supplied
+    ✗ A network error occurred while checking "https://storage.googleapis.com/": A request to send or receive data was disallowed because the socket is not connected and (when sending on a datagram socket using a sendto call) no address was supplied
+    ✗ A network error occurred while checking "https://maven.google.com/": A request to send or receive data was disallowed because the socket is not connected and (when sending on a datagram socket using a sendto call) no address was supplied
+    ✗ A network error occurred while checking "https://cocoapods.org/": A request to send or receive data was disallowed because the socket is not connected and (when sending on a datagram socket using a sendto call) no address was supplied
+    ✗ A network error occurred while checking "https://github.com/": A request to send or receive data was disallowed because the socket is not connected and (when sending on a datagram socket using a sendto call) no address was supplied
+
+! Doctor found issues in 6 categories.
+```

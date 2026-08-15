@@ -1,0 +1,4 @@
+CreateFile failed 5 (Access is denied.
+)
+Flutter failed to run "git -c log.showSignature=false log HEAD -n 1 --pretty=format:%ad --date=iso". The flutter tool cannot access the file or directory.
+Please ensure that the SDK and/or project is installed in a location that has read/write permissions for the current user.

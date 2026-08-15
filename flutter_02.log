@@ -1,0 +1,95 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter test test\tv_shortcuts_test.dart
+
+## exception
+
+PathAccessException: PathAccessException: Cannot create file, path = 'build\unit_test_assets\assets/branding/CHERIFLIX%20typography%20logo.png' (OS Error: The process cannot access the file because it is being used by another process, errno = 32)
+
+```
+#0      _File.throwIfError (dart:io/file_impl.dart:779:7)
+#1      _File.createSync (dart:io/file_impl.dart:340:5)
+#2      ForwardingFile.createSync (package:file/src/forwarding/forwarding_file.dart:26:16)
+#3      ErrorHandlingFile.createSync.<anonymous closure> (package:flutter_tools/src/base/error_handling_io.dart:265:22)
+#4      _runSync (package:flutter_tools/src/base/error_handling_io.dart:552:14)
+#5      ErrorHandlingFile.createSync (package:flutter_tools/src/base/error_handling_io.dart:264:5)
+#6      ErrorHandlingFile.copySync.<anonymous closure> (package:flutter_tools/src/base/error_handling_io.dart:300:24)
+#7      _runSync (package:flutter_tools/src/base/error_handling_io.dart:552:14)
+#8      ErrorHandlingFile.copySync (package:flutter_tools/src/base/error_handling_io.dart:299:5)
+#9      writeBundle.<anonymous closure> (package:flutter_tools/src/bundle_builder.dart:215:19)
+<asynchronous suspension>
+#10     Future.wait.<anonymous closure> (dart:async/future.dart:546:21)
+<asynchronous suspension>
+#11     writeBundle (package:flutter_tools/src/bundle_builder.dart:171:3)
+<asynchronous suspension>
+#12     TestCommand._buildTestAsset (package:flutter_tools/src/commands/test.dart:791:7)
+<asynchronous suspension>
+#13     TestCommand.runCommand (package:flutter_tools/src/commands/test.dart:487:7)
+<asynchronous suspension>
+#14     FlutterCommand.run.<anonymous closure> (package:flutter_tools/src/runner/flutter_command.dart:1590:27)
+<asynchronous suspension>
+#15     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#16     CommandRunner.runCommand (package:args/command_runner.dart:212:13)
+<asynchronous suspension>
+#17     FlutterCommandRunner.runCommand.<anonymous closure> (package:flutter_tools/src/runner/flutter_command_runner.dart:496:9)
+<asynchronous suspension>
+#18     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#19     FlutterCommandRunner.runCommand (package:flutter_tools/src/runner/flutter_command_runner.dart:431:5)
+<asynchronous suspension>
+#20     FlutterCommandRunner.run.<anonymous closure> (package:flutter_tools/src/runner/flutter_command_runner.dart:307:33)
+<asynchronous suspension>
+#21     run.<anonymous closure>.<anonymous closure> (package:flutter_tools/runner.dart:104:11)
+<asynchronous suspension>
+#22     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#23     main (package:flutter_tools/executable.dart:103:3)
+<asynchronous suspension>
+```
+
+## flutter doctor
+
+```
+[✓] Flutter (Channel stable, 3.41.4, on Microsoft Windows [Version 10.0.26200.8246], locale en-AU) [316ms]
+    • Flutter version 3.41.4 on channel stable at C:\Users\WATER\Documents\Codex\CHERIFLIX\.tooling\flutter
+    • Upstream repository https://github.com/flutter/flutter.git
+    • Framework revision ff37bef603 (7 weeks ago), 2026-03-03 16:03:22 -0800
+    • Engine revision e4b8dca3f1
+    • Dart version 3.11.1
+    • DevTools version 2.54.1
+    • Feature flags: enable-web, enable-linux-desktop, enable-macos-desktop, enable-windows-desktop, enable-android, enable-ios, cli-animations, enable-native-assets, omit-legacy-version-file, enable-lldb-debugging, enable-uiscene-migration
+
+[✓] Windows Version (11 Home 64-bit, 25H2, 2009) [1,100ms]
+
+[✓] Android toolchain - develop for Android devices (Android SDK version 36.0.0) [3.6s]
+    • Android SDK at C:\Users\WATER\Documents\Codex\CHERIFLIX\.android-sdk
+    • Emulator version unknown
+    • Platform android-36, build-tools 36.0.0
+    • Java binary at: C:\Users\WATER\Tools\jdk-21\bin\java
+      This JDK is specified by the JAVA_HOME environment variable.
+      To manually set the JDK path, use: `flutter config --jdk-dir="path/to/jdk"`.
+    • Java version OpenJDK Runtime Environment Temurin-21.0.10+7 (build 21.0.10+7-LTS)
+    • All Android licenses accepted.
+
+[✓] Chrome - develop for the web [171ms]
+    • Chrome at C:\Program Files\Google\Chrome\Application\chrome.exe
+
+[✓] Visual Studio - develop Windows apps (Visual Studio Community 2026 18.1.0) [170ms]
+    • Visual Studio at C:\Program Files\Microsoft Visual Studio\18\Community
+    • Visual Studio Community 2026 version 18.1.11304.174
+    • Windows 10 SDK version 10.0.26100.0
+
+[✓] Connected device (3 available) [266ms]
+    • Windows (desktop) • windows • windows-x64    • Microsoft Windows [Version 10.0.26200.8246]
+    • Chrome (web)      • chrome  • web-javascript • Google Chrome 147.0.7727.56
+    • Edge (web)        • edge    • web-javascript • Microsoft Edge 145.0.3800.97
+
+[✓] Network resources [1,176ms]
+    • All expected network resources are available.
+
+• No issues found!
+```

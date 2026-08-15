@@ -1,0 +1,73 @@
+name: cheriflix
+description: CHERIFLIX Windows-first streaming app scaffold.
+publish_to: 'none'
+
+version: 0.1.57+58
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+  flutter: '>=3.24.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  archive: ^3.6.1
+  cached_network_image: ^3.4.1
+  flutter_cache_manager: ^3.4.1
+  crypto: ^3.0.6
+  dio: ^5.7.0
+  flutter_inappwebview: ^6.1.5
+  flutter_secure_storage: ^9.2.4
+  hive: ^2.2.3
+  media_kit: ^1.2.6
+  media_kit_libs_video: ^1.0.7
+  media_kit_video: ^2.0.1
+  http: ^1.2.2
+  path_provider: ^2.1.5
+  sqflite: ^2.4.2
+  sqflite_common_ffi: ^2.3.7+1
+  url_launcher: ^6.3.2
+  webview_windows: ^0.4.0
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  flutter_test:
+    sdk: flutter
+
+dependency_overrides:
+  flutter_inappwebview_windows:
+    path: third_party/flutter_inappwebview_windows
+  media_kit_video:
+    path: third_party/media_kit_video
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/branding/CHERIFLIX typography logo.png
+    - assets/branding/icon HQ.png
+    - assets/avatars/
+    - profile-pictures/
+  fonts:
+    - family: Netflix Sans
+      fonts:
+        - asset: fonts/Netflix_Sans_Light.otf
+          weight: 300
+        - asset: fonts/Netflix_Sans_Medium.otf
+          weight: 500
+        - asset: fonts/Netflix_Sans_Bold.otf
+          weight: 700
+    - family: DomusExtrabold
+      fonts:
+        - asset: fonts/Domus_Extrabold.ttf
+    - family: BebasNeueSemirounded
+      fonts:
+        - asset: fonts/bebas-neue-semirounded.ttf
+    - family: BebasNeueRegular
+      fonts:
+        - asset: fonts/BebasNeue-Regular.ttf
+    - family: BFSoloSansBold
+      fonts:
+        - asset: fonts/BF Solo Sans W00 Bold.ttf
+    - family: Consolas
+      fonts:
+        - asset: assets/fonts/Consolas-Regular.ttf

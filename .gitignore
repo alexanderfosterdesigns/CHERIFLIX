@@ -1,0 +1,37 @@
+.dart_tool/
+.idea/
+.vscode/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+build/
+coverage/
+*.user
+*.suo
+*.cache
+*.db
+*.log
+*.exe
+*.dll
+*.pdb
+*.msix
+*.apk
+*.aab
+.tooling/
+.pub-cache/
+.appdata/
+.localappdata/
+cheriflix.iml
+dist/
+AppData/
+**/cheriflix.exe.WebView2/
+**/EBWebView/
+**/Cookies
+**/Login Data*
+**/History*
+**/Local Storage/
+**/Session Storage/
+android/key.properties
+*.jks
+*.keystore

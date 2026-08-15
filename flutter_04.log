@@ -1,0 +1,100 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter test test\player_screen_test.dart --plain-name PlayerScreen manual server switch keeps timestamp and paused intent --reporter expanded
+
+## exception
+
+PathAccessException: PathAccessException: Cannot open file, path = 'C:\Users\WATER\Documents\Codex\CHERIFLIX\build\native_assets\windows\native_assets.json' (OS Error: The process cannot access the file because it is being used by another process, errno = 32)
+
+```
+#0      _checkForErrorResponse (dart:io/common.dart:58:9)
+#1      _File.open.<anonymous closure> (dart:io/file_impl.dart:438:7)
+#2      _rootRunUnary (dart:async/zone_root.dart:48:47)
+#3      _CustomZone.runUnary (dart:async/zone.dart:733:19)
+<asynchronous suspension>
+#4      _File.writeAsBytes.<anonymous closure> (dart:io/file_impl.dart:728:34)
+<asynchronous suspension>
+#5      ForwardingFile.writeAsString (package:file/src/forwarding/forwarding_file.dart:136:12)
+<asynchronous suspension>
+#6      ErrorHandlingFile.writeAsString.<anonymous closure> (package:flutter_tools/src/base/error_handling_io.dart:238:9)
+<asynchronous suspension>
+#7      _run (package:flutter_tools/src/base/error_handling_io.dart:514:12)
+<asynchronous suspension>
+#8      _writeNativeAssetsJson (package:flutter_tools/src/isolated/native_assets/native_assets.dart:277:3)
+<asynchronous suspension>
+#9      installCodeAssets (package:flutter_tools/src/isolated/native_assets/native_assets.dart:128:3)
+<asynchronous suspension>
+#10     testCompilerBuildNativeAssets (package:flutter_tools/src/isolated/native_assets/test/native_assets.dart:79:3)
+<asynchronous suspension>
+#11     TestCommand.runCommand (package:flutter_tools/src/commands/test.dart:484:11)
+<asynchronous suspension>
+#12     FlutterCommand.run.<anonymous closure> (package:flutter_tools/src/runner/flutter_command.dart:1590:27)
+<asynchronous suspension>
+#13     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#14     CommandRunner.runCommand (package:args/command_runner.dart:212:13)
+<asynchronous suspension>
+#15     FlutterCommandRunner.runCommand.<anonymous closure> (package:flutter_tools/src/runner/flutter_command_runner.dart:496:9)
+<asynchronous suspension>
+#16     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#17     FlutterCommandRunner.runCommand (package:flutter_tools/src/runner/flutter_command_runner.dart:431:5)
+<asynchronous suspension>
+#18     FlutterCommandRunner.run.<anonymous closure> (package:flutter_tools/src/runner/flutter_command_runner.dart:307:33)
+<asynchronous suspension>
+#19     run.<anonymous closure>.<anonymous closure> (package:flutter_tools/runner.dart:104:11)
+<asynchronous suspension>
+#20     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+<asynchronous suspension>
+#21     main (package:flutter_tools/executable.dart:103:3)
+<asynchronous suspension>
+```
+
+## flutter doctor
+
+```
+[!] Flutter (Channel stable, 3.41.4, on Microsoft Windows [Version 10.0.26200.8524], locale en-AU) [749ms]
+    • Flutter version 3.41.4 on channel stable at C:\Users\WATER\Documents\Codex\CHERIFLIX\.tooling\flutter
+    ! The flutter binary is not on your path. Consider adding C:\Users\WATER\Documents\Codex\CHERIFLIX\.tooling\flutter\bin to your path.
+    ! The dart binary is not on your path. Consider adding C:\Users\WATER\Documents\Codex\CHERIFLIX\.tooling\flutter\bin to your path.
+    • Upstream repository https://github.com/flutter/flutter.git
+    • Framework revision ff37bef603 (3 months ago), 2026-03-03 16:03:22 -0800
+    • Engine revision e4b8dca3f1
+    • Dart version 3.11.1
+    • DevTools version 2.54.1
+    • Feature flags: enable-web, enable-linux-desktop, enable-macos-desktop, enable-windows-desktop, enable-android, enable-ios, cli-animations, enable-native-assets, omit-legacy-version-file, enable-lldb-debugging, enable-uiscene-migration
+    • If those were intentional, you can disregard the above warnings; however it is recommended to use "git" directly to perform update checks and upgrades.
+
+[✓] Windows Version (11 Home 64-bit, 25H2, 2009) [3.1s]
+
+[✓] Android toolchain - develop for Android devices (Android SDK version 36.0.0) [7.0s]
+    • Android SDK at C:\Users\WATER\Documents\Codex\CHERIFLIX\.android-sdk
+    • Emulator version 36.5.10.0 (build_id 15081367) (CL:N/A)
+    • Platform android-36, build-tools 36.0.0
+    • Java binary at: C:\Users\WATER\Tools\jdk-21\bin\java
+      This JDK is specified by the JAVA_HOME environment variable.
+      To manually set the JDK path, use: `flutter config --jdk-dir="path/to/jdk"`.
+    • Java version OpenJDK Runtime Environment Temurin-21.0.10+7 (build 21.0.10+7-LTS)
+    • All Android licenses accepted.
+
+[✓] Chrome - develop for the web [240ms]
+    • Chrome at C:\Program Files\Google\Chrome\Application\chrome.exe
+
+[✓] Visual Studio - develop Windows apps (Visual Studio Community 2026 18.1.0) [235ms]
+    • Visual Studio at C:\Program Files\Microsoft Visual Studio\18\Community
+    • Visual Studio Community 2026 version 18.1.11304.174
+    • Windows 10 SDK version 10.0.26100.0
+
+[✓] Connected device (3 available) [682ms]
+    • Windows (desktop) • windows • windows-x64    • Microsoft Windows [Version 10.0.26200.8524]
+    • Chrome (web)      • chrome  • web-javascript • Google Chrome 148.0.7778.216
+    • Edge (web)        • edge    • web-javascript • Microsoft Edge 145.0.3800.97
+
+[✓] Network resources [665ms]
+    • All expected network resources are available.
+
+! Doctor found issues in 1 category.
+```
