@@ -2,6 +2,8 @@
 
 CHERIFLIX is a Windows-first Flutter streaming app scaffold built around a TV-style focus model, TMDb metadata, a rotating multi-provider embed playback system, and a separate .NET 8 updater.
 
+> **Beta build:** Android and Android TV packages from this repository install as **Cheriflix Beta**. Completed implementation builds are published locally as `ready to install apk/Cheriflix-Beta.apk`.
+
 ## Current scope
 
 This repository currently contains:
@@ -59,7 +61,9 @@ The script enforces:
 
 - release build target platforms: `android-arm`, `android-arm64`, `android-x64`
 - APK ABI validation for `libapp.so` and `libflutter.so` in every packaged ABI
-- badging checks for app label (`Cheriflix`) and TV banner presence
+- mandatory badging checks for the beta app label (`Cheriflix Beta`), launchable activity, and TV banner presence
+- replacement of any obsolete APKs in `ready to install apk`
+- final signed output copied to `ready to install apk/Cheriflix-Beta.apk`
 
 If you only want to regenerate Android launcher + TV banner assets:
 

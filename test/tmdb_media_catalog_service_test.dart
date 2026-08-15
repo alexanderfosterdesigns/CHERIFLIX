@@ -56,17 +56,48 @@ void main() {
 
       expect(result, isNull);
     });
+
+    test('coalesces identical requests while the cache fill is in flight',
+        () async {
+      final previewUri = Uri.parse(
+        'https://www.youtube-nocookie.com/embed/shared?autoplay=1&mute=1',
+      );
+      final service = _PreviewListCatalogService(
+        <Uri>[previewUri],
+        delay: const Duration(milliseconds: 20),
+      );
+
+      final results = await Future.wait(<Future<Uri?>>[
+        service.fetchTrailerPreviewUri(
+          tmdbId: 404,
+          mediaType: MediaType.movie,
+          languageCode: 'en',
+        ),
+        service.fetchTrailerPreviewUri(
+          tmdbId: 404,
+          mediaType: MediaType.movie,
+          languageCode: 'en',
+        ),
+      ]);
+
+      expect(results, <Uri?>[previewUri, previewUri]);
+      expect(service.fetchCount, 1);
+    });
   });
 }
 
 class _PreviewListCatalogService extends TmdbMediaCatalogService {
-  _PreviewListCatalogService(this.previewUris)
-      : super(
+  _PreviewListCatalogService(
+    this.previewUris, {
+    this.delay = Duration.zero,
+  }) : super(
           tmdbClient: TmdbClient(apiKey: 'test'),
           cacheStore: const _NoopJsonCacheStore(),
         );
 
   final List<Uri> previewUris;
+  final Duration delay;
+  int fetchCount = 0;
 
   @override
   Future<List<Uri>> fetchTrailerPreviewUris({
@@ -75,6 +106,10 @@ class _PreviewListCatalogService extends TmdbMediaCatalogService {
     required String languageCode,
     bool muted = true,
   }) async {
+    fetchCount += 1;
+    if (delay > Duration.zero) {
+      await Future<void>.delayed(delay);
+    }
     return previewUris;
   }
 }

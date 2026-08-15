@@ -166,14 +166,18 @@ class _HomeScreenState extends State<HomeScreen> {
   late final ScrollController _bodyScrollController = ScrollController(
     initialScrollOffset: widget.initialScrollOffset,
   );
-  final List<GlobalKey<_ContentRailState>> _railKeys =
-      <GlobalKey<_ContentRailState>>[];
+  final Map<String, GlobalKey<_ContentRailState>> _railKeys =
+      <String, GlobalKey<_ContentRailState>>{};
+  List<String> _visibleRailTitles = const <String>[];
   String? _focusedRailItemKey;
+  String? _focusedRailTitle;
+  int? _focusedRailItemIndex;
   int _bodyScrollRequestSequence = 0;
   final Map<String, TmdbTitleLogo?> _preparedTitleLogos =
       <String, TmdbTitleLogo?>{};
   final Set<String> _logoPreparationKeys = <String>{};
   int _logoPreparationGeneration = 0;
+  int _catalogLoadGeneration = 0;
 
   @override
   void dispose() {
@@ -279,7 +283,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     if (_loading) {
-      return const _CenteredLoadingSpinner();
+      return const _BrowseLoadingSkeleton();
     }
 
     if (_error != null || _catalog == null) {
@@ -290,24 +294,6 @@ class _HomeScreenState extends State<HomeScreen> {
           label: 'Retry',
           icon: Icons.refresh_rounded,
           onPressed: _loadCatalog,
-          variant: TvButtonVariant.light,
-        ),
-      );
-    }
-
-    if (widget.browseMode == BrowseMode.newPopular &&
-        _justReleasedCatalog == null) {
-      if (_loadingJustReleased) {
-        return const _CenteredLoadingSpinner();
-      }
-      return _CenteredMessage(
-        title: 'Unable to load New & Popular',
-        message: _justReleasedError ??
-            'The latest release rails could not be loaded.',
-        action: TvActionButton(
-          label: 'Retry',
-          icon: Icons.refresh_rounded,
-          onPressed: () => _loadJustReleasedCatalog(showErrors: true),
           variant: TvButtonVariant.light,
         ),
       );
@@ -329,6 +315,8 @@ class _HomeScreenState extends State<HomeScreen> {
       justReleasedCatalog: _justReleasedCatalog,
       upcomingCatalog: _upcomingCatalog,
     ).where((rail) => rail.items.isNotEmpty).toList(growable: false);
+    _visibleRailTitles =
+        rails.map((rail) => rail.title).toList(growable: false);
     return ListView(
       key: const ValueKey<String>('home_body_list'),
       controller: _bodyScrollController,
@@ -369,7 +357,7 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 18),
         for (var index = 0; index < rails.length; index += 1) ...<Widget>[
           _ContentRail(
-            key: _railKeyForIndex(index),
+            key: _railKeyForTitle(rails[index].title),
             title: rails[index].title,
             items: rails[index].items,
             savedTitleKeys: widget.savedTitleKeys,
@@ -449,6 +437,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadCatalog() async {
     final service = widget.mediaCatalogService;
+    final loadGeneration = ++_catalogLoadGeneration;
     if (service == null) {
       if (!mounted) {
         return;
@@ -474,50 +463,103 @@ class _HomeScreenState extends State<HomeScreen> {
       _justReleasedCatalog = null;
       _justReleasedError = null;
       _loadingJustReleased = false;
+      _homeRecommendations = const <MediaSummary>[];
+      _upcomingCatalog = const UpcomingCatalog(
+        movies: <MediaSummary>[],
+        series: <MediaSummary>[],
+        seasons: <UpcomingSeasonEntry>[],
+      );
     });
 
-    try {
-      final homeRecommendationsFuture =
-          widget.loadHomeRecommendations?.call() ??
-              Future<List<MediaSummary>>.value(const <MediaSummary>[]);
-      final upcomingService =
-          widget.mediaCatalogService.runtimeType == TmdbMediaCatalogService
-              ? _tmdbCatalogService
-              : null;
-      final upcomingFuture = upcomingService
-              ?.fetchUpcomingCatalog(
-                languageCode: widget.languageCode,
-              )
-              .catchError(
-                (_) => const UpcomingCatalog(
-                  movies: <MediaSummary>[],
-                  series: <MediaSummary>[],
-                  seasons: <UpcomingSeasonEntry>[],
-                ),
-              ) ??
-          Future<UpcomingCatalog>.value(const UpcomingCatalog(
+    // Start optional enrichment at the same time as the base catalog, but do
+    // not keep already-usable browse content behind it. The final rails and
+    // data sources remain identical; only their presentation is progressive.
+    final homeRecommendationsFuture =
+        (widget.loadHomeRecommendations?.call() ??
+                Future<List<MediaSummary>>.value(const <MediaSummary>[]))
+            .catchError((_) => const <MediaSummary>[]);
+    final upcomingService =
+        widget.mediaCatalogService.runtimeType == TmdbMediaCatalogService
+            ? _tmdbCatalogService
+            : null;
+    final upcomingFuture = upcomingService
+            ?.fetchUpcomingCatalog(languageCode: widget.languageCode)
+            .catchError(
+              (_) => const UpcomingCatalog(
+                movies: <MediaSummary>[],
+                series: <MediaSummary>[],
+                seasons: <UpcomingSeasonEntry>[],
+              ),
+            ) ??
+        Future<UpcomingCatalog>.value(
+          const UpcomingCatalog(
             movies: <MediaSummary>[],
             series: <MediaSummary>[],
             seasons: <UpcomingSeasonEntry>[],
-          ));
-      final results = await Future.wait<Object>(<Future<Object>>[
-        service.fetchHomeCatalog(
+          ),
+        );
+
+    try {
+      var catalog = await service.fetchHomeCatalog(
+        languageCode: widget.languageCode,
+      );
+      final tmdbService = _tmdbCatalogService;
+      if (tmdbService != null) {
+        // Never publish an unfiltered catalog for a restricted profile.
+        catalog = await tmdbService.filterHomeCatalogForMaturity(
+          catalog,
+          tier: widget.activeProfile.maturityTier,
           languageCode: widget.languageCode,
+        );
+      }
+      if (!mounted || loadGeneration != _catalogLoadGeneration) {
+        return;
+      }
+
+      setState(() {
+        _catalog = catalog;
+        _loading = false;
+      });
+      _prepareTabHeroLogos(catalog);
+      _requestInitialFocus();
+      unawaited(
+        _loadJustReleasedCatalog(
+          showErrors: widget.browseMode == BrowseMode.newPopular,
         ),
-        homeRecommendationsFuture,
-        upcomingFuture,
-      ]);
-      var catalog = results[0] as HomeCatalogData;
-      var homeRecommendations = results[1] as List<MediaSummary>;
-      var upcomingCatalog = results[2] as UpcomingCatalog;
+      );
+      unawaited(
+        _loadSupplementalCatalog(
+          loadGeneration: loadGeneration,
+          homeRecommendationsFuture: homeRecommendationsFuture,
+          upcomingFuture: upcomingFuture,
+        ),
+      );
+    } catch (error) {
+      if (!mounted || loadGeneration != _catalogLoadGeneration) {
+        return;
+      }
+      setState(() {
+        _loading = false;
+        _homeRecommendations = const <MediaSummary>[];
+        _error = userFacingErrorMessage(
+          error,
+          fallback: 'The browse rails could not be loaded.',
+        );
+      });
+    }
+  }
+
+  Future<void> _loadSupplementalCatalog({
+    required int loadGeneration,
+    required Future<List<MediaSummary>> homeRecommendationsFuture,
+    required Future<UpcomingCatalog> upcomingFuture,
+  }) async {
+    try {
+      var homeRecommendations = await homeRecommendationsFuture;
+      var upcomingCatalog = await upcomingFuture;
       final tmdbService = _tmdbCatalogService;
       if (tmdbService != null) {
         final filtered = await Future.wait<Object>(<Future<Object>>[
-          tmdbService.filterHomeCatalogForMaturity(
-            catalog,
-            tier: widget.activeProfile.maturityTier,
-            languageCode: widget.languageCode,
-          ),
           tmdbService.filterForMaturity(
             homeRecommendations,
             tier: widget.activeProfile.maturityTier,
@@ -529,38 +571,34 @@ class _HomeScreenState extends State<HomeScreen> {
             languageCode: widget.languageCode,
           ),
         ]);
-        catalog = filtered[0] as HomeCatalogData;
-        homeRecommendations = filtered[1] as List<MediaSummary>;
-        upcomingCatalog = filtered[2] as UpcomingCatalog;
+        homeRecommendations = filtered[0] as List<MediaSummary>;
+        upcomingCatalog = filtered[1] as UpcomingCatalog;
       }
-      if (!mounted) {
+      if (!mounted || loadGeneration != _catalogLoadGeneration) {
         return;
       }
+      final focusedRailTitle = _focusedRailTitle;
+      final focusedItemIndex = _focusedRailItemIndex;
       setState(() {
-        _catalog = catalog;
         _homeRecommendations = homeRecommendations;
         _upcomingCatalog = upcomingCatalog;
-        _loading = false;
       });
-      _prepareTabHeroLogos(catalog);
-      _requestInitialFocus();
-      unawaited(
-        _loadJustReleasedCatalog(
-          showErrors: widget.browseMode == BrowseMode.newPopular,
-        ),
-      );
-    } catch (error) {
-      if (!mounted) {
-        return;
+      if (focusedRailTitle != null && focusedItemIndex != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted || _focusedRailTitle != focusedRailTitle) {
+            return;
+          }
+          final newRailIndex = _visibleRailTitles.indexOf(focusedRailTitle);
+          if (newRailIndex >= 0) {
+            unawaited(
+              _railStateFor(newRailIndex)?.requestFocusAtIndex(focusedItemIndex),
+            );
+          }
+        });
       }
-      setState(() {
-        _loading = false;
-        _homeRecommendations = const <MediaSummary>[];
-        _error = userFacingErrorMessage(
-          error,
-          fallback: 'The browse rails could not be loaded.',
-        );
-      });
+    } catch (_) {
+      // Base browse content is already usable. Optional enrichment failures
+      // retain the existing fallback rows instead of blanking the screen.
     }
   }
 
@@ -717,6 +755,10 @@ class _HomeScreenState extends State<HomeScreen> {
   ) {
     if (focused) {
       _focusedRailItemKey = itemKey;
+      _focusedRailTitle = railIndex >= 0 && railIndex < _visibleRailTitles.length
+          ? _visibleRailTitles[railIndex]
+          : null;
+      _focusedRailItemIndex = itemIndex;
       widget.onFocusedItemChanged?.call(railIndex, itemIndex);
       // Keep the whole rail visible, including its heading. Using only the
       // card rectangle allowed the heading to slip underneath the fixed TV
@@ -731,6 +773,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (_focusedRailItemKey == itemKey) {
       _focusedRailItemKey = null;
+      _focusedRailTitle = null;
+      _focusedRailItemIndex = null;
     }
   }
 
@@ -874,18 +918,18 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  GlobalKey<_ContentRailState> _railKeyForIndex(int index) {
-    while (_railKeys.length <= index) {
-      _railKeys.add(GlobalKey<_ContentRailState>());
-    }
-    return _railKeys[index];
+  GlobalKey<_ContentRailState> _railKeyForTitle(String title) {
+    return _railKeys.putIfAbsent(
+      title,
+      () => GlobalKey<_ContentRailState>(debugLabel: 'HomeRail($title)'),
+    );
   }
 
   _ContentRailState? _railStateFor(int index) {
-    if (index < 0 || index >= _railKeys.length) {
+    if (index < 0 || index >= _visibleRailTitles.length) {
       return null;
     }
-    return _railKeys[index].currentState;
+    return _railKeys[_visibleRailTitles[index]]?.currentState;
   }
 
   FocusNode _heroActionFocusNodeForIndex(int itemIndex) {
@@ -1327,7 +1371,9 @@ class _HeroBannerState extends State<_HeroBanner> {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: <Widget>[
                         CheriflixBadge(
-                          label: 'TOP 10',
+                          label: widget.browseMode == BrowseMode.newPopular
+                              ? 'NEW & POPULAR'
+                              : widget.item.mediaLabel,
                           backgroundColor: CheriflixColors.accentRed,
                           textStyle: CheriflixTypography.heroBannerMeta
                               .copyWith(fontSize: 14),
@@ -1350,7 +1396,7 @@ class _HeroBannerState extends State<_HeroBanner> {
                           color: const Color(0x55FFFFFF),
                         ),
                         Text(
-                          _mockupHeroRatingText(widget.item),
+                          _heroRatingText(widget.item),
                           style: CheriflixTypography.heroBannerMeta.copyWith(
                             fontSize: 14,
                             color: CheriflixColors.textPrimary,
@@ -2024,13 +2070,66 @@ class _CenteredMessage extends StatelessWidget {
   }
 }
 
-class _CenteredLoadingSpinner extends StatelessWidget {
-  const _CenteredLoadingSpinner();
+class _BrowseLoadingSkeleton extends StatelessWidget {
+  const _BrowseLoadingSkeleton();
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(),
+    final layout = CheriflixTvLayout.of(context);
+    const base = Color(0xFF1D1D1D);
+    const highlight = Color(0xFF292929);
+    return ExcludeSemantics(
+      child: ListView(
+        padding: layout.pagePadding,
+        physics: const NeverScrollableScrollPhysics(),
+        children: <Widget>[
+          Container(
+            height: layout.homeHeroHeight,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: <Color>[base, highlight, base],
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          for (var rail = 0; rail < 2; rail += 1) ...<Widget>[
+            Container(
+              width: 190,
+              height: 22,
+              alignment: Alignment.centerLeft,
+              child: const DecoratedBox(
+                decoration: BoxDecoration(
+                  color: highlight,
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                ),
+                child: SizedBox.expand(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: layout.homeRailCardPosterHeight,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: 6,
+                separatorBuilder: (_, __) => SizedBox(width: layout.homeRailGap),
+                itemBuilder: (_, __) => Container(
+                  width: layout.homeRailCardWidth,
+                  decoration: BoxDecoration(
+                    color: base,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0x12FFFFFF)),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 28),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -2344,24 +2443,23 @@ String _heroMomentumText(MediaSummary item, BrowseMode browseMode) {
   switch (browseMode) {
     case BrowseMode.home:
       return item.mediaType == MediaType.movie
-          ? 'in Movies Today'
-          : 'in TV Shows Today';
+          ? 'Featured Movie'
+          : 'Featured Series';
     case BrowseMode.tvShows:
-      return 'in TV Shows Today';
+      return 'Featured Series';
     case BrowseMode.movies:
-      return 'in Movies Today';
+      return 'Featured Movie';
     case BrowseMode.newPopular:
-      return 'in New & Popular';
+      return 'Recently Added';
   }
 }
 
-// ignore: unused_element
 String _heroRatingText(MediaSummary item) {
   final rating = item.rating;
   if (rating == null) {
-    return 'IMDb';
+    return 'TMDb';
   }
-  return '${rating.toStringAsFixed(1)} ★ IMDb';
+  return '${rating.toStringAsFixed(1)} ★ TMDb';
 }
 
 // ignore: unused_element
@@ -2387,36 +2485,4 @@ double _heroTitleFontSize(
     return 54;
   }
   return 62;
-}
-
-String _mockupHeroRatingText(MediaSummary item) {
-  final rating = item.rating;
-  if (rating == null) {
-    return 'IMDb';
-  }
-  return '${rating.toStringAsFixed(1)} \u2605 IMDb';
-}
-
-double _mockupHeroTitleFontSize(
-  String title, {
-  required bool compact,
-}) {
-  final normalizedLength = title.trim().length;
-  if (compact) {
-    if (normalizedLength >= 30) {
-      return 42;
-    }
-    if (normalizedLength >= 20) {
-      return 56;
-    }
-    return 64;
-  }
-
-  if (normalizedLength >= 30) {
-    return 48;
-  }
-  if (normalizedLength >= 20) {
-    return 64;
-  }
-  return 74;
 }

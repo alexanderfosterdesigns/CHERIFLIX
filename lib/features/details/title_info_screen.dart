@@ -169,9 +169,21 @@ class _TitleInfoScreenState extends State<TitleInfoScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         SizedBox(height: layout.headerTopSpacing),
-                        const Text(
-                          'DETAILS',
-                          style: CheriflixTypography.overline,
+                        Row(
+                          children: <Widget>[
+                            TvActionButton(
+                              label: 'Back',
+                              icon: Icons.arrow_back_rounded,
+                              onPressed: widget.onBack,
+                              compact: true,
+                              variant: TvButtonVariant.ghost,
+                            ),
+                            const SizedBox(width: 16),
+                            const Text(
+                              'DETAILS',
+                              style: CheriflixTypography.overline,
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 10),
                         Text(

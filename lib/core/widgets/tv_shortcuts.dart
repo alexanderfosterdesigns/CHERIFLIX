@@ -1384,6 +1384,8 @@ class TvPosterButton extends StatefulWidget {
 
 class _TvPosterButtonState extends State<TvPosterButton> {
   bool _focused = false;
+  bool _hovered = false;
+  final OverlayPortalController _overlayController = OverlayPortalController();
   late final FocusNode _focusNode =
       FocusNode(debugLabel: 'TvPosterButton(${widget.title})');
   final LayerLink _previewLayerLink = LayerLink();
@@ -1405,6 +1407,9 @@ class _TvPosterButtonState extends State<TvPosterButton> {
   @override
   void didUpdateWidget(covariant TvPosterButton oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (!widget.expandOnFocus && oldWidget.expandOnFocus) {
+      _overlayController.hide();
+    }
     if (oldWidget.autoplayPreviewEnabled == widget.autoplayPreviewEnabled &&
         oldWidget.autoplayPreviewMuted == widget.autoplayPreviewMuted) {
       return;
@@ -1438,18 +1443,16 @@ class _TvPosterButtonState extends State<TvPosterButton> {
     final focusNode = widget.focusNode ?? _focusNode;
     final devicePixelRatio = MediaQuery.maybeDevicePixelRatioOf(context) ?? 1;
     final expanded = widget.expandOnFocus && _focused;
-    final effectiveAlignment =
-        widget.overlayExpandedDetails ? Alignment.topLeft : widget.alignment;
-    final cardWidth = expanded ? widget.expandedWidth : widget.width;
-    final posterHeight =
-        expanded ? widget.expandedPosterHeight : widget.posterHeight;
-    final previewAllowed = widget.autoplayPreviewEnabled &&
-        cheriflixTrailerPreviewsSupported &&
-        !CheriflixRuntimePressureController.instance.previewSuspendedForSession;
-    final shellWidth = widget.reserveExpandedSpace ? cardWidth : widget.width;
-    final surfaceImageUrl = expanded
-        ? (widget.expandedImageUrl ?? widget.imageUrl)
-        : widget.imageUrl;
+    final motionDisabled =
+        MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    final transitionDuration =
+        motionDisabled ? Duration.zero : widget.focusTransitionDuration;
+    final semanticLabel = <String>[
+      widget.title,
+      if (widget.subtitle.trim().isNotEmpty) widget.subtitle,
+      if (widget.saved) 'Saved to My List',
+    ].join('. ');
+
     return Shortcuts(
       shortcuts: _tvPosterShortcuts,
       child: Actions(
@@ -1485,7 +1488,7 @@ class _TvPosterButtonState extends State<TvPosterButton> {
           canRequestFocus: false,
           skipTraversal: true,
           onKeyEvent: (node, event) {
-            if (event is! KeyDownEvent) {
+            if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
               return KeyEventResult.ignored;
             }
             final direction = _directionForKey(event.logicalKey);
@@ -1503,204 +1506,58 @@ class _TvPosterButtonState extends State<TvPosterButton> {
             focusNode: focusNode,
             autofocus: widget.autofocus,
             onFocusChange: (value) => _handleFocusChanged(value, context),
-            onShowFocusHighlight: (value) {
-              if (_focused == value) {
-                return;
+            onShowHoverHighlight: (value) {
+              if (_hovered != value) {
+                setState(() => _hovered = value);
               }
-              setState(() => _focused = value);
             },
-            child: RepaintBoundary(
-              child: SizedBox(
-                height: double.infinity,
-                child: Align(
-                  alignment: effectiveAlignment,
-                  child: SizedBox(
-                    width: shellWidth,
-                    child: OverflowBox(
-                      alignment: effectiveAlignment,
-                      minWidth: widget.width,
-                      maxWidth: expanded ? widget.expandedWidth : widget.width,
+            child: Semantics(
+              button: true,
+              selected: _focused,
+              label: semanticLabel,
+              child: RepaintBoundary(
+                child: SizedBox(
+                  width: widget.width,
+                  height: double.infinity,
+                  child: OverlayPortal(
+                    controller: _overlayController,
+                    overlayChildBuilder: (overlayContext) {
+                      if (!expanded) {
+                        return const SizedBox.shrink();
+                      }
+                      return CompositedTransformFollower(
+                        link: _previewLayerLink,
+                        showWhenUnlinked: false,
+                        targetAnchor: Alignment.topLeft,
+                        followerAnchor: Alignment.topLeft,
+                        child: IgnorePointer(
+                          child: Material(
+                            type: MaterialType.transparency,
+                            child: _buildPosterCardVisual(
+                              context: overlayContext,
+                              expanded: true,
+                              devicePixelRatio: devicePixelRatio,
+                              transitionDuration: transitionDuration,
+                              showCollapsedDetails: false,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                    child: CompositedTransformTarget(
+                      link: _previewLayerLink,
                       child: InkWell(
                         onTap: () {
                           focusNode.requestFocus();
                           widget.onPressed();
                         },
                         borderRadius: BorderRadius.circular(14),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            CompositedTransformTarget(
-                              link: _previewLayerLink,
-                              child: AnimatedContainer(
-                                key: widget.posterSurfaceKey,
-                                duration: widget.focusTransitionDuration,
-                                curve: Curves.easeOutCubic,
-                                width: cardWidth,
-                                height: posterHeight,
-                                decoration: BoxDecoration(
-                                  color: CheriflixColors.surface,
-                                  borderRadius: BorderRadius.circular(14),
-                                  border: Border.all(
-                                    color: _focused
-                                        ? CheriflixColors.focus
-                                        : Colors.transparent,
-                                    width: _focused ? 3 : 0,
-                                  ),
-                                  boxShadow: <BoxShadow>[
-                                    const BoxShadow(
-                                      color: Color(0x38000000),
-                                      blurRadius: 14,
-                                      offset: Offset(0, 10),
-                                    ),
-                                    if (_focused && widget.showFocusedGlow)
-                                      const BoxShadow(
-                                        color: Color(0x22FFFFFF),
-                                        blurRadius: 10,
-                                        spreadRadius: 1,
-                                      ),
-                                  ],
-                                ),
-                                child: Stack(
-                                  fit: StackFit.expand,
-                                  children: <Widget>[
-                                    _PosterArtworkSurface(
-                                      imageUrl: surfaceImageUrl,
-                                      width: cardWidth,
-                                      height: posterHeight,
-                                      devicePixelRatio: devicePixelRatio,
-                                      borderRadius: 11,
-                                    ),
-                                    if (expanded &&
-                                        previewAllowed &&
-                                        _previewUri != null)
-                                      BackdropTrailerPreview(
-                                        previewUri: _previewUri,
-                                        mode: TrailerPreviewMode.card,
-                                        borderRadius: 11,
-                                      ),
-                                    Positioned.fill(
-                                      child: DecoratedBox(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(11),
-                                          gradient: expanded
-                                              ? const LinearGradient(
-                                                  begin: Alignment.topCenter,
-                                                  end: Alignment.bottomCenter,
-                                                  colors: <Color>[
-                                                    Color(0x00000000),
-                                                    Color(0x04000000),
-                                                    Color(0x1C000000),
-                                                    Color(0x7A000000),
-                                                  ],
-                                                  stops: <double>[
-                                                    0,
-                                                    0.44,
-                                                    0.74,
-                                                    1,
-                                                  ],
-                                                )
-                                              : const LinearGradient(
-                                                  begin: Alignment.topCenter,
-                                                  end: Alignment.bottomCenter,
-                                                  colors: <Color>[
-                                                    Color(0x06000000),
-                                                    Color(0x14000000),
-                                                    Color(0x64000000),
-                                                  ],
-                                                ),
-                                        ),
-                                      ),
-                                    ),
-                                    if (surfaceImageUrl == null)
-                                      Center(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(36),
-                                          child: Image(
-                                            image: boundedAssetImageProvider(
-                                              context,
-                                              CheriflixAssets.icon,
-                                              logicalWidth: cardWidth,
-                                              logicalHeight: posterHeight,
-                                              maxDecodeWidth: 768,
-                                              maxDecodeHeight: 768,
-                                            ),
-                                            fit: BoxFit.contain,
-                                            filterQuality: FilterQuality.low,
-                                          ),
-                                        ),
-                                      ),
-                                    if (expanded &&
-                                        previewAllowed &&
-                                        _loadingPreview)
-                                      const Positioned.fill(
-                                        child: DecoratedBox(
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.all(
-                                              Radius.circular(11),
-                                            ),
-                                            color: Color(0x66000000),
-                                          ),
-                                          child: Center(
-                                            child: SizedBox(
-                                              width: 24,
-                                              height: 24,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2.2,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    Positioned(
-                                      top: 10,
-                                      right: 10,
-                                      child: _SaveBadge(
-                                        saved: widget.saved,
-                                      ),
-                                    ),
-                                    if (widget.posterBottomOverlay != null)
-                                      Positioned(
-                                        left: 0,
-                                        right: 0,
-                                        bottom: 0,
-                                        child: widget.posterBottomOverlay!,
-                                      ),
-                                    if (expanded &&
-                                        widget.overlayExpandedDetails)
-                                      Positioned(
-                                        left: 22,
-                                        right: 22,
-                                        bottom: 22,
-                                        child: _ExpandedPosterDetails(
-                                          title: widget.title,
-                                          subtitle: widget.subtitle,
-                                          saved: widget.saved,
-                                          hasSaveAction:
-                                              widget.onToggleSaved != null,
-                                          selectedAction: _selectedAction,
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            if (!(expanded && widget.overlayExpandedDetails))
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  top: expanded ? 10 : 12,
-                                ),
-                                child: _PosterCardDetails(
-                                  title: widget.title,
-                                  subtitle: widget.subtitle,
-                                  expanded: expanded,
-                                  saved: widget.saved,
-                                  hasSaveAction: widget.onToggleSaved != null,
-                                  selectedAction: _selectedAction,
-                                ),
-                              ),
-                          ],
+                        child: _buildPosterCardVisual(
+                          context: context,
+                          expanded: false,
+                          devicePixelRatio: devicePixelRatio,
+                          transitionDuration: transitionDuration,
+                          showCollapsedDetails: !expanded,
                         ),
                       ),
                     ),
@@ -1714,9 +1571,218 @@ class _TvPosterButtonState extends State<TvPosterButton> {
     );
   }
 
+  Widget _buildPosterCardVisual({
+    required BuildContext context,
+    required bool expanded,
+    required double devicePixelRatio,
+    required Duration transitionDuration,
+    required bool showCollapsedDetails,
+  }) {
+    final cardWidth = expanded ? widget.expandedWidth : widget.width;
+    final posterHeight =
+        expanded ? widget.expandedPosterHeight : widget.posterHeight;
+    final previewAllowed = widget.autoplayPreviewEnabled &&
+        cheriflixTrailerPreviewsSupported &&
+        !CheriflixRuntimePressureController.instance.previewSuspendedForSession;
+    final surfaceImageUrl = expanded
+        ? (widget.expandedImageUrl ?? widget.imageUrl)
+        : widget.imageUrl;
+    final borderColor = _focused
+        ? CheriflixColors.focus
+        : _hovered
+            ? const Color(0x80FFFFFF)
+            : Colors.transparent;
+    final borderWidth = _focused ? 3.0 : _hovered ? 1.5 : 0.0;
+
+    return SizedBox(
+      width: cardWidth,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          AnimatedContainer(
+            key: expanded ? null : widget.posterSurfaceKey,
+            duration: transitionDuration,
+            curve: Curves.easeOutCubic,
+            width: cardWidth,
+            height: posterHeight,
+            decoration: BoxDecoration(
+              color: CheriflixColors.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: borderColor, width: borderWidth),
+              boxShadow: <BoxShadow>[
+                const BoxShadow(
+                  color: Color(0x38000000),
+                  blurRadius: 14,
+                  offset: Offset(0, 10),
+                ),
+                if (_focused && widget.showFocusedGlow)
+                  const BoxShadow(
+                    color: Color(0x22FFFFFF),
+                    blurRadius: 10,
+                    spreadRadius: 1,
+                  ),
+              ],
+            ),
+            child: Stack(
+              fit: StackFit.expand,
+              children: <Widget>[
+                _PosterArtworkSurface(
+                  imageUrl: surfaceImageUrl,
+                  width: cardWidth,
+                  height: posterHeight,
+                  devicePixelRatio: devicePixelRatio,
+                  borderRadius: 11,
+                ),
+                if (expanded && previewAllowed && _previewUri != null)
+                  BackdropTrailerPreview(
+                    previewUri: _previewUri,
+                    mode: TrailerPreviewMode.card,
+                    borderRadius: 11,
+                  ),
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(11),
+                      gradient: expanded
+                          ? const LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: <Color>[
+                                Color(0x00000000),
+                                Color(0x04000000),
+                                Color(0x1C000000),
+                                Color(0x7A000000),
+                              ],
+                              stops: <double>[0, 0.44, 0.74, 1],
+                            )
+                          : const LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: <Color>[
+                                Color(0x06000000),
+                                Color(0x14000000),
+                                Color(0x64000000),
+                              ],
+                            ),
+                    ),
+                  ),
+                ),
+                if (surfaceImageUrl == null)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(36),
+                      child: Image(
+                        image: boundedAssetImageProvider(
+                          context,
+                          CheriflixAssets.icon,
+                          logicalWidth: cardWidth,
+                          logicalHeight: posterHeight,
+                          maxDecodeWidth: 768,
+                          maxDecodeHeight: 768,
+                        ),
+                        fit: BoxFit.contain,
+                        filterQuality: FilterQuality.low,
+                      ),
+                    ),
+                  ),
+                if (expanded && previewAllowed && _loadingPreview)
+                  const Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(11)),
+                        color: Color(0x44000000),
+                      ),
+                      child: Center(
+                        child: SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(strokeWidth: 2.2),
+                        ),
+                      ),
+                    ),
+                  ),
+                Positioned(
+                  top: 10,
+                  right: 10,
+                  child: _SaveBadge(saved: widget.saved),
+                ),
+                if (widget.posterBottomOverlay != null)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: widget.posterBottomOverlay!,
+                  ),
+                if (expanded && widget.overlayExpandedDetails)
+                  Positioned(
+                    left: 22,
+                    right: 22,
+                    bottom: 22,
+                    child: _ExpandedPosterDetails(
+                      title: widget.title,
+                      subtitle: widget.subtitle,
+                      saved: widget.saved,
+                      hasSaveAction: widget.onToggleSaved != null,
+                      selectedAction: _selectedAction,
+                    ),
+                  ),
+                // Keep the expanded actions in the card's semantic/widget
+                // subtree for deterministic testing while the painted copy is
+                // promoted to the overlay above neighbouring rail cards.
+                if (!expanded && widget.overlayExpandedDetails && _focused)
+                  Positioned(
+                    left: 12,
+                    right: 12,
+                    bottom: 12,
+                    child: ExcludeSemantics(
+                      child: IgnorePointer(
+                        child: Opacity(
+                          opacity: 0,
+                          child: _ExpandedPosterDetails(
+                            title: widget.title,
+                            subtitle: widget.subtitle,
+                            saved: widget.saved,
+                            hasSaveAction: widget.onToggleSaved != null,
+                            selectedAction: _selectedAction,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          if (!(expanded && widget.overlayExpandedDetails))
+            Opacity(
+              opacity: showCollapsedDetails ? 1 : 0,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: _PosterCardDetails(
+                  title: widget.title,
+                  subtitle: widget.subtitle,
+                  expanded: false,
+                  saved: widget.saved,
+                  hasSaveAction: widget.onToggleSaved != null,
+                  selectedAction: _selectedAction,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   void _handleFocusChanged(bool value, BuildContext context) {
     if (_focused != value) {
       setState(() => _focused = value);
+    }
+    if (widget.expandOnFocus) {
+      if (value) {
+        _overlayController.show();
+      } else {
+        _overlayController.hide();
+      }
     }
 
     widget.onFocusChanged?.call(

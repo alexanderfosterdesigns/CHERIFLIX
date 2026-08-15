@@ -156,14 +156,7 @@ class _EpisodesBrowserState extends State<EpisodesBrowser> {
     _EpisodesLayoutMetrics metrics,
   ) {
     if (_loading) {
-      return Center(
-        child: SizedBox.square(
-          dimension: metrics.loadingIndicatorSize,
-          child: CircularProgressIndicator(
-            strokeWidth: metrics.loadingIndicatorStrokeWidth,
-          ),
-        ),
-      );
+      return _EpisodeListSkeleton(metrics: metrics);
     }
 
     if (_error != null) {
@@ -396,6 +389,77 @@ class _EpisodesBrowserState extends State<EpisodesBrowser> {
       }
       _seasonFocusNodes[_selectedSeason]?.requestFocus();
     });
+  }
+}
+
+class _EpisodeListSkeleton extends StatelessWidget {
+  const _EpisodeListSkeleton({required this.metrics});
+
+  final _EpisodesLayoutMetrics metrics;
+
+  @override
+  Widget build(BuildContext context) {
+    return ExcludeSemantics(
+      child: Column(
+        children: <Widget>[
+          for (var index = 0; index < 4; index += 1) ...<Widget>[
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0x66131313),
+                  borderRadius: BorderRadius.circular(metrics.rowRadius),
+                  border: Border.all(color: const Color(0x14FFFFFF)),
+                ),
+                padding: EdgeInsets.all(metrics.episodeRowPadding),
+                child: Row(
+                  children: <Widget>[
+                    Container(
+                      width: metrics.thumbnailWidth,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF222222),
+                        borderRadius:
+                            BorderRadius.circular(metrics.thumbnailRadius),
+                      ),
+                    ),
+                    SizedBox(width: metrics.episodeContentGap),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          FractionallySizedBox(
+                            widthFactor: 0.54,
+                            child: Container(
+                              height: metrics.episodeTitleFontSize,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF292929),
+                                borderRadius: BorderRadius.circular(7),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: metrics.textGapSmall * 2),
+                          FractionallySizedBox(
+                            widthFactor: 0.82,
+                            child: Container(
+                              height: metrics.episodeSynopsisFontSize * 1.8,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF202020),
+                                borderRadius: BorderRadius.circular(7),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (index < 3) SizedBox(height: metrics.episodeGap),
+          ],
+        ],
+      ),
+    );
   }
 }
 

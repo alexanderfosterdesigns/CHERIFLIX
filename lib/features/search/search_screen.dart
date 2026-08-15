@@ -181,6 +181,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   Timer? _debounce;
   String _query = '';
+  String _displayedQuery = '';
   int _cursorIndex = 0;
   bool _loading = false;
   String? _error;
@@ -431,7 +432,7 @@ class _SearchScreenState extends State<SearchScreen> {
       );
     }
 
-    if (_loading) {
+    if (_loading && _results.isEmpty) {
       return const _SearchMessage(
         title: 'Results',
         message: 'Searching the CHERIFLIX catalog...',
@@ -439,7 +440,7 @@ class _SearchScreenState extends State<SearchScreen> {
       );
     }
 
-    if (_error != null) {
+    if (_error != null && _results.isEmpty) {
       return _SearchMessage(
         title: 'Search failed',
         message: _error!,
@@ -472,10 +473,23 @@ class _SearchScreenState extends State<SearchScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const CheriflixSectionTitle(title: 'Results'),
+            Row(
+              children: <Widget>[
+                const Expanded(child: CheriflixSectionTitle(title: 'Results')),
+                if (_loading)
+                  const SizedBox.square(
+                    dimension: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+              ],
+            ),
             const SizedBox(height: 6),
             Text(
-              'Results for "$_query"',
+              _loading && _displayedQuery != _query.trim()
+                  ? 'Showing results for "$_displayedQuery" while searching for "${_query.trim()}"'
+                  : 'Results for "${_displayedQuery.isEmpty ? _query : _displayedQuery}"',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: CheriflixTypography.bodyMedium.copyWith(
                 color: CheriflixColors.textSecondary,
               ),
@@ -866,12 +880,12 @@ class _SearchScreenState extends State<SearchScreen> {
       return KeyEventResult.ignored;
     }
 
-    final normalized = character.toUpperCase();
-    final isAllowed = isSupportedTvKeyboardCharacter(normalized);
-    if (!isAllowed) {
+    if (character.runes.any((value) => value < 0x20 || value == 0x7F)) {
       return KeyEventResult.ignored;
     }
-
+    final normalized = RegExp(r'^[a-z]$').hasMatch(character)
+        ? character.toUpperCase()
+        : character;
     _append(normalized);
     return KeyEventResult.handled;
   }
@@ -945,6 +959,7 @@ class _SearchScreenState extends State<SearchScreen> {
       _disposeResultFocusNodes();
       setState(() {
         _results = const <MediaSummary>[];
+        _displayedQuery = '';
         _error = null;
         _loading = false;
       });
@@ -990,6 +1005,7 @@ class _SearchScreenState extends State<SearchScreen> {
       _disposeResultFocusNodes();
       setState(() {
         _results = results;
+        _displayedQuery = query;
         _loading = false;
       });
     } catch (error) {

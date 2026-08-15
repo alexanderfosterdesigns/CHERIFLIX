@@ -344,7 +344,7 @@ class CheriflixTopBar extends StatelessWidget {
         padding: EdgeInsets.only(right: tabSpacing),
         child: CheriflixNavPill(
           label: label,
-          active: activeTab == label,
+          active: _isActiveTab(label),
           topBarStyle: true,
         ),
       );
@@ -355,7 +355,7 @@ class CheriflixTopBar extends StatelessWidget {
       child: TvNavPillButton(
         label: label,
         onPressed: onPressed,
-        active: activeTab == label,
+        active: _isActiveTab(label),
         style: TvNavPillStyle.topBarUnderline,
         focusNode: focusNode,
         downFallbackNodes: downFallbackNodes,
@@ -364,6 +364,10 @@ class CheriflixTopBar extends StatelessWidget {
         onFocusChanged: onControlFocusChanged,
       ),
     );
+  }
+
+  bool _isActiveTab(String label) {
+    return activeTab?.trim().toLowerCase() == label.trim().toLowerCase();
   }
 
   List<FocusNode> _leftFallbackNodesFor(

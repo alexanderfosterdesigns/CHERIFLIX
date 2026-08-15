@@ -111,7 +111,7 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen> {
   static const double _recommendationExpandedPosterAspectRatio = 16 / 9;
-  static const double _recommendationLoadingHeight = 140;
+  static const double _recommendationLoadingHeight = 380;
   static const double _recommendationEmptyHeight = 86;
 
   CheriflixTvLayout get _layout => CheriflixTvLayout.of(context);
@@ -163,6 +163,7 @@ class _DetailScreenState extends State<DetailScreen> {
   List<FocusNode> _recommendationFocusNodes = <FocusNode>[];
   List<String> _recommendationFocusKeys = <String>[];
   bool _recommendationRailExpanded = false;
+  int _titleExperienceGeneration = 0;
 
   late final FocusNode _playFocusNode = FocusNode(debugLabel: 'DetailPlay');
   late final FocusNode _downloadFocusNode =
@@ -194,6 +195,7 @@ class _DetailScreenState extends State<DetailScreen> {
     if (oldWidget.summary.saveKey != widget.summary.saveKey ||
         oldWidget.languageCode != widget.languageCode ||
         oldWidget.mediaCatalogService != widget.mediaCatalogService ||
+        oldWidget.autoplayPreviews != widget.autoplayPreviews ||
         oldWidget.muteAutoplayTrailers != widget.muteAutoplayTrailers) {
       _summary = widget.summary;
       _metadata = null;
@@ -674,7 +676,7 @@ class _DetailScreenState extends State<DetailScreen> {
 
   Widget _buildRecommendationsRail() {
     if (_recommendationsLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const _RecommendationRailSkeleton();
     }
 
     if (_recommendations.isEmpty || widget.onOpenTitle == null) {
@@ -694,7 +696,8 @@ class _DetailScreenState extends State<DetailScreen> {
       controller: _recommendationScrollController,
       clipBehavior: Clip.none,
       scrollDirection: Axis.horizontal,
-      physics: const NeverScrollableScrollPhysics(),
+      physics: const ClampingScrollPhysics(),
+      cacheExtent: _recommendationCardWidth * 3,
       itemCount: _recommendations.length,
       separatorBuilder: (_, __) => SizedBox(width: _recommendationCardGap),
       itemBuilder: (context, index) {
@@ -759,6 +762,7 @@ class _DetailScreenState extends State<DetailScreen> {
   }
 
   Future<void> _loadTitleExperience() async {
+    final generation = ++_titleExperienceGeneration;
     final catalogService = _tmdbCatalogService;
     if (catalogService == null) {
       if (!mounted) {
@@ -782,76 +786,97 @@ class _DetailScreenState extends State<DetailScreen> {
       _titleLogo = preparedLogo;
     }
     unawaited(_loadTitleLogo(catalogService));
+    unawaited(_loadMetadataExperience(catalogService, generation));
+    unawaited(_loadRecommendationsExperience(catalogService, generation));
 
-    final metadataFuture = catalogService
-        .fetchTitleMetadata(
-          tmdbId: widget.summary.tmdbId,
-          mediaType: widget.summary.mediaType,
+    if (widget.autoplayPreviews) {
+      unawaited(_loadBackdropPreview(catalogService, generation));
+    } else if (_backgroundPreviewUri != null && mounted) {
+      setState(() => _backgroundPreviewUri = null);
+    }
+  }
+
+  Future<void> _loadMetadataExperience(
+    TmdbMediaCatalogService catalogService,
+    int generation,
+  ) async {
+    TitleMetadata? metadata;
+    MediaSummary? fallbackSummary;
+    try {
+      metadata = await catalogService.fetchTitleMetadata(
+        tmdbId: widget.summary.tmdbId,
+        mediaType: widget.summary.mediaType,
+        languageCode: widget.languageCode,
+      );
+    } catch (_) {
+      fallbackSummary = await catalogService
+          .fetchTitleDetails(
+            tmdbId: widget.summary.tmdbId,
+            mediaType: widget.summary.mediaType,
+            languageCode: widget.languageCode,
+          )
+          .catchError((_) => widget.summary);
+    }
+    if (!mounted || generation != _titleExperienceGeneration) {
+      return;
+    }
+    setState(() {
+      _metadata = metadata;
+      _summary = metadata?.summary ?? fallbackSummary ?? widget.summary;
+    });
+    _scheduleFocusRestore();
+  }
+
+  Future<void> _loadRecommendationsExperience(
+    TmdbMediaCatalogService catalogService,
+    int generation,
+  ) async {
+    List<MediaSummary> recommendations;
+    try {
+      recommendations = await catalogService.fetchRecommendations(
+        tmdbId: widget.summary.tmdbId,
+        mediaType: widget.summary.mediaType,
+        languageCode: widget.languageCode,
+      );
+      if (widget.activeProfile.maturityTier.name != 'mature') {
+        recommendations = await catalogService.filterForMaturity(
+          recommendations,
+          tier: widget.activeProfile.maturityTier,
           languageCode: widget.languageCode,
-        )
-        .then<Object?>((value) => value)
-        .catchError((_) => null);
-    final recommendationsFuture = catalogService
-        .fetchRecommendations(
-          tmdbId: widget.summary.tmdbId,
-          mediaType: widget.summary.mediaType,
-          languageCode: widget.languageCode,
-        )
-        .then<Object?>((value) => value)
-        .catchError((_) => const <MediaSummary>[]);
-    final previewFuture = catalogService
+        );
+      }
+    } catch (_) {
+      recommendations = const <MediaSummary>[];
+    }
+    if (!mounted || generation != _titleExperienceGeneration) {
+      return;
+    }
+    setState(() {
+      _recommendations = recommendations;
+      _recommendationsLoading = false;
+    });
+    _syncRecommendationFocusNodes(recommendations);
+    _scheduleFocusRestore();
+  }
+
+  Future<void> _loadBackdropPreview(
+    TmdbMediaCatalogService catalogService,
+    int generation,
+  ) async {
+    final previewUri = await catalogService
         .fetchTrailerPreviewUri(
           tmdbId: widget.summary.tmdbId,
           mediaType: widget.summary.mediaType,
           languageCode: widget.languageCode,
           muted: widget.muteAutoplayTrailers,
         )
-        .then<Object?>((value) => value)
         .catchError((_) => null);
-
-    final results = await Future.wait<Object?>(<Future<Object?>>[
-      metadataFuture,
-      recommendationsFuture,
-      previewFuture,
-    ]);
-    if (!mounted) {
+    if (!mounted ||
+        generation != _titleExperienceGeneration ||
+        !widget.autoplayPreviews) {
       return;
     }
-
-    final metadata = results[0] as TitleMetadata?;
-    final fallbackSummary = metadata == null
-        ? await catalogService
-            .fetchTitleDetails(
-              tmdbId: widget.summary.tmdbId,
-              mediaType: widget.summary.mediaType,
-              languageCode: widget.languageCode,
-            )
-            .catchError((_) => widget.summary)
-        : null;
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {
-      _metadata = metadata;
-      _summary = metadata?.summary ?? fallbackSummary ?? widget.summary;
-      final rawRecommendations = results[1]! as List<MediaSummary>;
-      _recommendations = widget.activeProfile.maturityTier.name == 'mature'
-          ? rawRecommendations
-          : const <MediaSummary>[];
-      _backgroundPreviewUri = results[2] as Uri?;
-      _recommendationsLoading = false;
-    });
-    if (widget.activeProfile.maturityTier.name != 'mature') {
-      final filtered = await catalogService.filterForMaturity(
-        results[1]! as List<MediaSummary>,
-        tier: widget.activeProfile.maturityTier,
-        languageCode: widget.languageCode,
-      );
-      if (mounted) setState(() => _recommendations = filtered);
-    }
-    _syncRecommendationFocusNodes(_recommendations);
-    _scheduleFocusRestore();
+    setState(() => _backgroundPreviewUri = previewUri);
   }
 
   Future<void> _loadTitleLogo(TmdbMediaCatalogService catalogService) async {
@@ -950,6 +975,14 @@ class _DetailScreenState extends State<DetailScreen> {
 
   void _requestPrimaryScreenFocus() {
     if (!mounted) {
+      return;
+    }
+    final detailAlreadyHasFocus = _heroActionNodes.any((node) => node.hasFocus) ||
+        _overviewTabFocusNode.hasFocus ||
+        _episodesTabFocusNode.hasFocus ||
+        _detailsTabFocusNode.hasFocus ||
+        _recommendationFocusNodes.any((node) => node.hasFocus);
+    if (detailAlreadyHasFocus) {
       return;
     }
     _scrollBodyToTop(immediate: true);
@@ -1293,6 +1326,31 @@ class _DetailScreenState extends State<DetailScreen> {
       mediaType: item.mediaType,
       languageCode: widget.languageCode,
       muted: muted,
+    );
+  }
+}
+
+class _RecommendationRailSkeleton extends StatelessWidget {
+  const _RecommendationRailSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    final layout = CheriflixTvLayout.of(context);
+    return ExcludeSemantics(
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: 6,
+        separatorBuilder: (_, __) => SizedBox(width: layout.homeRailGap),
+        itemBuilder: (_, __) => Container(
+          width: layout.homeRailCardWidth,
+          decoration: BoxDecoration(
+            color: const Color(0xFF202020),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0x14FFFFFF)),
+          ),
+        ),
+      ),
     );
   }
 }
