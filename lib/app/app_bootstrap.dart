@@ -112,12 +112,24 @@ class _AppBootstrapState extends State<AppBootstrap> {
 
   Future<_AppDependencies> _loadDependencies() async {
     final runtimeConfig = _RuntimeConfig.fromEnvironment();
-    final database = await CheriflixDatabase.open().timeout(_bootstrapTimeout);
+    final databaseFuture =
+        CheriflixDatabase.open().timeout(_bootstrapTimeout);
+    final supportDirectoryFuture = getApplicationSupportDirectory();
+    final providerConfigFuture =
+        _loadProviderConfig(runtimeConfig.providerConfigPath).timeout(
+      _bootstrapTimeout,
+    );
+
+    final database = await databaseFuture;
     final profileRepository = SqliteProfileRepository(database);
     final settingsRepository = SqliteAppSettingsRepository(database);
     final audioLanguagePreferenceStore =
         SqliteAudioLanguagePreferenceStore(database);
-    final supportDirectory = await getApplicationSupportDirectory();
+    final supportDirectory = await supportDirectoryFuture;
+    final captionServiceFuture = _buildCaptionService(
+      runtimeConfig,
+      supportDirectory: supportDirectory,
+    );
     final configuredDownloadLocation =
         (await settingsRepository.readDownloadLocation())?.trim();
     var downloadRoot = Directory(
@@ -133,7 +145,7 @@ class _AppBootstrapState extends State<AppBootstrap> {
       );
       await downloadRoot.create(recursive: true);
     }
-    final offlineDownloadManager = await OfflineDownloadManager.open(
+    final offlineDownloadManagerFuture = OfflineDownloadManager.open(
       rootDirectory: downloadRoot,
     );
     final providerPreferenceStore = SqliteProviderPreferenceStore(database);
@@ -143,10 +155,7 @@ class _AppBootstrapState extends State<AppBootstrap> {
       database,
     );
 
-    final providerConfig =
-        await _loadProviderConfig(runtimeConfig.providerConfigPath).timeout(
-      _bootstrapTimeout,
-    );
+    final providerConfig = await providerConfigFuture;
 
     final tmdbClient = runtimeConfig.tmdbApiKey.isEmpty
         ? null
@@ -213,6 +222,7 @@ class _AppBootstrapState extends State<AppBootstrap> {
       ),
     );
 
+    final offlineDownloadManager = await offlineDownloadManagerFuture;
     final playbackProvider = EmbedPlaybackProvider(
       providerCatalog: const ProviderCatalog(),
       preferenceStore: providerPreferenceStore,
@@ -231,7 +241,7 @@ class _AppBootstrapState extends State<AppBootstrap> {
         : UpdateService(
             manifestUrl: Uri.parse(runtimeConfig.updateManifestUrl),
           );
-    final captionService = await _buildCaptionService(runtimeConfig);
+    final captionService = await captionServiceFuture;
 
     return _AppDependencies(
       profileRepository: profileRepository,
@@ -269,7 +279,9 @@ class _AppBootstrapState extends State<AppBootstrap> {
   }
 
   Future<CaptionService> _buildCaptionService(
-      _RuntimeConfig runtimeConfig) async {
+    _RuntimeConfig runtimeConfig, {
+    required Directory supportDirectory,
+  }) async {
     final apiKey = runtimeConfig.subdlApiKey.trim();
     if (apiKey.isEmpty) {
       cheriflixLog(
@@ -285,7 +297,6 @@ class _AppBootstrapState extends State<AppBootstrap> {
       );
     }
 
-    final supportDirectory = await getApplicationSupportDirectory();
     final subtitleRoot = Directory(
       '${supportDirectory.path}${Platform.pathSeparator}subtitles${Platform.pathSeparator}subdl',
     );

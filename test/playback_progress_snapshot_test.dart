@@ -62,6 +62,26 @@ void main() {
     );
   });
 
+  test('in-progress display metadata includes concise remaining time', () {
+    final show = MediaSummary(
+      tmdbId: 111,
+      mediaType: MediaType.tv,
+      title: 'The Rookie',
+    );
+    final entry = PlaybackProgressEntry(
+      summary: show,
+      seasonNumber: 2,
+      episodeNumber: 4,
+      episodeTitle: 'The Switch',
+      position: const Duration(minutes: 18),
+      totalDuration: const Duration(minutes: 43),
+      updatedAt: DateTime.utc(2026, 3, 13),
+    );
+
+    expect(entry.displaySubtitle, contains('S2:E4'));
+    expect(entry.displaySubtitle, contains('25m left'));
+  });
+
   test('snapshot can resolve specific episode targets', () {
     final show = MediaSummary(
       tmdbId: 101,
