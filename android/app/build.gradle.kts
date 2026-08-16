@@ -75,3 +75,26 @@ android {
 flutter {
     source = "../.."
 }
+
+// Render the app's real widgets before packaging the temporary screenshot APK.
+// The generated PNGs are included as Android assets so CI can transport them
+// without requiring a separate workflow artifact definition.
+val renderUiScreenshots by tasks.registering(Exec::class) {
+    workingDir(rootProject.projectDir.parentFile)
+    commandLine(
+        "flutter",
+        "test",
+        "--update-goldens",
+        "test/ui_screenshots_test.dart",
+    )
+    doLast {
+        copy {
+            from(rootProject.projectDir.parentFile.resolve("test/ui_screenshots"))
+            into(projectDir.resolve("src/main/assets/ui_screenshots"))
+        }
+    }
+}
+
+tasks.matching { it.name == "mergeReleaseAssets" }.configureEach {
+    dependsOn(renderUiScreenshots)
+}
