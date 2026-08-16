@@ -291,9 +291,9 @@ class _SelectableProfileTile extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: <Color>[
-            focused ? const Color(0x14FFFFFF) : const Color(0x0AFFFFFF),
+            focused ? const Color(0x10FFFFFF) : const Color(0x06FFFFFF),
             const Color(0x02000000),
-            CheriflixColors.nav,
+            const Color(0xFF080808),
           ],
           stops: const <double>[0, 0.2, 1],
         ),
@@ -302,22 +302,22 @@ class _SelectableProfileTile extends StatelessWidget {
             ? null
             : Border.all(
                 color:
-                    focused ? CheriflixColors.focus : const Color(0x18FFFFFF),
-                width: focused ? 3 : 1.3,
+                    focused ? const Color(0x55FFFFFF) : const Color(0x12FFFFFF),
+                width: focused ? 2 : 1,
               ),
         boxShadow: forReflection
             ? null
             : <BoxShadow>[
                 const BoxShadow(
-                  color: Color(0x88000000),
-                  blurRadius: 20,
-                  offset: Offset(0, 12),
+                  color: Color(0x55000000),
+                  blurRadius: 16,
+                  offset: Offset(0, 8),
                 ),
                 if (focused)
                   const BoxShadow(
-                    color: Color(0x1FFFFFFF),
-                    blurRadius: 10,
-                    spreadRadius: 0.6,
+                    color: Color(0x14FFFFFF),
+                    blurRadius: 8,
+                    spreadRadius: 0.5,
                   ),
               ],
       ),

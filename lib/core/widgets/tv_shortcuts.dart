@@ -1540,23 +1540,23 @@ class _TvPosterButtonState extends State<TvPosterButton> {
                                 height: posterHeight,
                                 decoration: BoxDecoration(
                                   color: CheriflixColors.surface,
-                                  borderRadius: BorderRadius.circular(14),
+                                  borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
                                     color: _focused
-                                        ? CheriflixColors.focus
+                                        ? const Color(0x88FFFFFF)
                                         : Colors.transparent,
-                                    width: _focused ? 3 : 0,
+                                    width: _focused ? 2 : 0,
                                   ),
                                   boxShadow: <BoxShadow>[
                                     const BoxShadow(
-                                      color: Color(0x38000000),
-                                      blurRadius: 14,
-                                      offset: Offset(0, 10),
+                                      color: Color(0x22000000),
+                                      blurRadius: 12,
+                                      offset: Offset(0, 6),
                                     ),
                                     if (_focused && widget.showFocusedGlow)
                                       const BoxShadow(
-                                        color: Color(0x22FFFFFF),
-                                        blurRadius: 10,
+                                        color: Color(0x14FFFFFF),
+                                        blurRadius: 8,
                                         spreadRadius: 1,
                                       ),
                                   ],
@@ -2065,28 +2065,37 @@ class _PosterActionPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: selected ? Colors.white : const Color(0xFF2A2A2A),
+        color: selected ? const Color(0xFFF0F0F0) : const Color(0xFF1A1A1A),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
-          color: selected ? CheriflixColors.focus : const Color(0x34FFFFFF),
-          width: selected ? 2 : 1,
+          color: selected ? const Color(0xF0FFFFFF) : const Color(0x18FFFFFF),
+          width: selected ? 1.5 : 1,
         ),
+        boxShadow: selected
+            ? const <BoxShadow>[
+                BoxShadow(
+                  color: Color(0x18FFFFFF),
+                  blurRadius: 6,
+                ),
+              ]
+            : null,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Icon(
             icon,
-            color: selected ? Colors.black : CheriflixColors.textPrimary,
-            size: 17,
+            color: selected ? Colors.black : const Color(0xBBF0F0F0),
+            size: 16,
           ),
-          const SizedBox(width: 7),
+          const SizedBox(width: 6),
           Text(
             label,
             style: CheriflixTypography.button.copyWith(
-              color: selected ? Colors.black : CheriflixColors.textPrimary,
+              color: selected ? Colors.black : const Color(0xBBF0F0F0),
+              fontSize: 13,
               letterSpacing: 0.2,
             ),
           ),
@@ -2229,24 +2238,24 @@ class _TvEpisodeButtonState extends State<TvEpisodeButton> {
                   duration: const Duration(milliseconds: 160),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: CheriflixColors.surface,
-                      borderRadius: BorderRadius.circular(20),
+                      color: const Color(0xFF141414),
+                      borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: _focused
-                            ? CheriflixColors.focus
-                            : const Color(0x18FFFFFF),
-                        width: _focused ? 3 : 1,
+                            ? const Color(0x66FFFFFF)
+                            : const Color(0x10FFFFFF),
+                        width: _focused ? 2 : 1,
                       ),
                       boxShadow: <BoxShadow>[
                         const BoxShadow(
-                          color: Color(0x3B000000),
-                          blurRadius: 14,
-                          offset: Offset(0, 10),
+                          color: Color(0x28000000),
+                          blurRadius: 12,
+                          offset: Offset(0, 6),
                         ),
                         if (_focused)
                           const BoxShadow(
-                            color: Color(0x18FFFFFF),
-                            blurRadius: 12,
+                            color: Color(0x10FFFFFF),
+                            blurRadius: 8,
                             spreadRadius: 1,
                           ),
                       ],
@@ -2394,20 +2403,22 @@ class _SaveBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        color: saved ? CheriflixColors.accentRed : const Color(0xBF111111),
+        color: saved ? CheriflixColors.accentRed : const Color(0xAA080808),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
-          color: saved ? CheriflixColors.accentRed : const Color(0x30FFFFFF),
+          color: saved ? const Color(0x88CC1020) : const Color(0x22FFFFFF),
+          width: 0.5,
         ),
       ),
       child: Text(
         saved ? 'SAVED' : 'SAVE',
         style: CheriflixTypography.metadata.copyWith(
-          color: CheriflixColors.textPrimary,
-          fontSize: 12,
-          letterSpacing: 0.5,
+          color: Colors.white,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.6,
         ),
       ),
     );
@@ -2438,10 +2449,10 @@ _ResolvedButtonStyle _buttonStyle({
 }) {
   if (!enabled) {
     return const _ResolvedButtonStyle(
-      backgroundColor: Color(0xFF121212),
-      foregroundColor: CheriflixColors.textSecondary,
-      borderColor: Color(0x14FFFFFF),
-      borderWidth: 1.3,
+      backgroundColor: Color(0xFF0E0E0E),
+      foregroundColor: Color(0x557A7A7A),
+      borderColor: Color(0x10FFFFFF),
+      borderWidth: 1,
       shadows: <BoxShadow>[],
     );
   }
@@ -2449,78 +2460,78 @@ _ResolvedButtonStyle _buttonStyle({
   switch (variant) {
     case TvButtonVariant.light:
       return _ResolvedButtonStyle(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFF0F0F0),
         foregroundColor: Colors.black,
-        borderColor: focused ? CheriflixColors.focus : Colors.white,
-        borderWidth: focused ? 3 : 1.3,
+        borderColor: focused ? CheriflixColors.focus : const Color(0xE0F0F0F0),
+        borderWidth: focused ? 2.5 : 1,
         shadows: const <BoxShadow>[
           BoxShadow(
-            color: Color(0x33000000),
-            blurRadius: 18,
-            offset: Offset(0, 10),
+            color: Color(0x22000000),
+            blurRadius: 14,
+            offset: Offset(0, 6),
           ),
         ],
       );
     case TvButtonVariant.dark:
       return _ResolvedButtonStyle(
-        backgroundColor: const Color(0xFF2B2B2B),
+        backgroundColor: const Color(0xFF1A1A1A),
         foregroundColor: CheriflixColors.textPrimary,
-        borderColor: focused ? CheriflixColors.focus : const Color(0x30FFFFFF),
-        borderWidth: focused ? 3 : 1.3,
+        borderColor: focused ? const Color(0x55FFFFFF) : const Color(0x1AFFFFFF),
+        borderWidth: focused ? 2 : 1,
         shadows: const <BoxShadow>[
           BoxShadow(
-            color: Color(0x59000000),
-            blurRadius: 12,
-            offset: Offset(0, 6),
+            color: Color(0x33000000),
+            blurRadius: 10,
+            offset: Offset(0, 4),
           ),
         ],
       );
     case TvButtonVariant.media:
       return _ResolvedButtonStyle(
-        backgroundColor: focused ? Colors.white : const Color(0xFF2B2B2B),
+        backgroundColor: focused ? const Color(0xFFF0F0F0) : const Color(0xFF1A1A1A),
         foregroundColor: focused ? Colors.black : CheriflixColors.textPrimary,
-        borderColor: focused ? Colors.white : const Color(0x36FFFFFF),
-        borderWidth: 2,
+        borderColor: focused ? const Color(0xF0FFFFFF) : const Color(0x22FFFFFF),
+        borderWidth: focused ? 2.5 : 1,
         shadows: <BoxShadow>[
           const BoxShadow(
-            color: Color(0x66000000),
-            blurRadius: 16,
-            offset: Offset(0, 8),
+            color: Color(0x44000000),
+            blurRadius: 14,
+            offset: Offset(0, 6),
           ),
           if (focused)
             const BoxShadow(
-              color: Color(0x22FFFFFF),
-              blurRadius: 10,
+              color: Color(0x18FFFFFF),
+              blurRadius: 8,
               spreadRadius: 1,
             ),
         ],
       );
     case TvButtonVariant.danger:
       return _ResolvedButtonStyle(
-        backgroundColor: CheriflixColors.accentRed,
+        backgroundColor: const Color(0xFFCC1020),
         foregroundColor: CheriflixColors.textPrimary,
         borderColor:
-            focused ? CheriflixColors.focus : CheriflixColors.accentRedMuted,
-        borderWidth: focused ? 3 : 1.3,
+            focused ? const Color(0xF0FFFFFF) : const Color(0x88CC1020),
+        borderWidth: focused ? 2.5 : 1,
         shadows: const <BoxShadow>[
           BoxShadow(
-            color: Color(0x55E50914),
-            blurRadius: 14,
-            offset: Offset(0, 8),
+            color: Color(0x33E50914),
+            blurRadius: 12,
+            offset: Offset(0, 5),
           ),
         ],
       );
     case TvButtonVariant.ghost:
       return _ResolvedButtonStyle(
-        backgroundColor: selected ? Colors.white : const Color(0xFF121212),
+        backgroundColor: selected ? const Color(0xFFF0F0F0) : const Color(0xFF0E0E0E),
         foregroundColor: selected ? Colors.black : CheriflixColors.textPrimary,
-        borderColor: focused ? CheriflixColors.focus : const Color(0x30FFFFFF),
-        borderWidth: focused ? 3 : 1.3,
+        borderColor: focused ? const Color(0x55FFFFFF) : const Color(0x18FFFFFF),
+        borderWidth: focused ? 2 : 1,
         shadows: const <BoxShadow>[
           BoxShadow(
-            color: Color(0x66000000),
-            blurRadius: 16,
-            offset: Offset(0, 8),
+            color: Color(0x33000000),
+            blurRadius: 12,
+            offset: Offset(0, 5),
           ),
         ],
       );

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class CheriflixColors {
-  static const Color background = Color(0xFF141414);
-  static const Color nav = Color(0xFF000000);
-  static const Color surface = Color(0xFF1A1A1A);
-  static const Color elevatedSurface = Color(0xFF232323);
+  static const Color background = Color(0xFF0D0D0D);
+  static const Color nav = Color(0xFF080808);
+  static const Color surface = Color(0xFF161616);
+  static const Color elevatedSurface = Color(0xFF1E1E1E);
   static const Color accentRed = Color(0xFFE50914);
   static const Color accentRedMuted = Color(0xFFB20710);
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFF999999);
-  static const Color outline = Color(0x40FFFFFF);
-  static const Color focus = Color(0xFFFFFFFF);
+  static const Color textPrimary = Color(0xFFF0F0F0);
+  static const Color textSecondary = Color(0xFF7A7A7A);
+  static const Color outline = Color(0x30FFFFFF);
+  static const Color focus = Color(0xFFE8E8E8);
   static const Color shadow = Color(0xB3000000);
 }
 
@@ -29,13 +29,14 @@ class CheriflixTypography {
   static const TextStyle heroTitle = TextStyle(
     fontSize: 40,
     fontWeight: FontWeight.w700,
-    height: 0.98,
+    height: 1.02,
+    letterSpacing: -0.3,
   );
 
   static const TextStyle heroBannerEyebrow = TextStyle(
     fontFamily: heroEyebrowFamily,
-    fontSize: 12,
-    letterSpacing: 4.1,
+    fontSize: 11,
+    letterSpacing: 4.5,
     height: 1,
     shadows: <Shadow>[
       Shadow(
@@ -90,25 +91,29 @@ class CheriflixTypography {
   static const TextStyle sectionTitle = TextStyle(
     fontSize: 22,
     fontWeight: FontWeight.w700,
-    height: 1.08,
+    height: 1.12,
+    letterSpacing: -0.15,
   );
 
   static const TextStyle cardTitle = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w500,
-    height: 1.16,
+    height: 1.2,
+    letterSpacing: -0.1,
   );
 
   static const TextStyle body = TextStyle(
     fontSize: 15,
     fontWeight: FontWeight.w300,
-    height: 1.52,
+    height: 1.55,
+    letterSpacing: 0.05,
   );
 
   static const TextStyle bodyMedium = TextStyle(
     fontSize: 15,
     fontWeight: FontWeight.w500,
     height: 1.48,
+    letterSpacing: 0.02,
   );
 
   static const TextStyle metadata = TextStyle(
@@ -120,14 +125,15 @@ class CheriflixTypography {
 
   static const TextStyle button = TextStyle(
     fontSize: 14,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w600,
     height: 1.1,
+    letterSpacing: 0.1,
   );
 
   static const TextStyle overline = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w500,
-    letterSpacing: 0.8,
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 1.0,
     height: 1.1,
     color: CheriflixColors.textSecondary,
   );
@@ -198,7 +204,7 @@ ThemeData buildCheriflixTheme() {
       selectionColor: Color(0x66E50914),
       selectionHandleColor: CheriflixColors.accentRed,
     ),
-    dividerColor: Colors.white10,
+    dividerColor: const Color(0x12FFFFFF),
   );
 
   return base.copyWith(
@@ -208,14 +214,14 @@ ThemeData buildCheriflixTheme() {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: const Color(0xFF101010),
+      fillColor: const Color(0xFF0C0C0C),
       labelStyle: CheriflixTypography.button.copyWith(
         color: CheriflixColors.textSecondary,
         letterSpacing: 0.6,
       ),
       hintStyle: const TextStyle(
-        color: Color(0x80FFFFFF),
-        fontSize: 16,
+        color: Color(0x66FFFFFF),
+        fontSize: 15,
         fontWeight: FontWeight.w300,
       ),
       contentPadding: const EdgeInsets.symmetric(
@@ -223,24 +229,24 @@ ThemeData buildCheriflixTheme() {
         vertical: 18,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: CheriflixColors.outline),
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: Color(0x1AFFFFFF), width: 1),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(
-          color: CheriflixColors.focus,
-          width: 3,
+          color: Color(0xAAFFFFFF),
+          width: 1.5,
         ),
       ),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: CheriflixColors.outline),
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: Color(0x1AFFFFFF), width: 1),
       ),
     ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: CheriflixColors.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       contentTextStyle: CheriflixTypography.bodyMedium.copyWith(
         color: CheriflixColors.textPrimary,
       ),
@@ -248,8 +254,8 @@ ThemeData buildCheriflixTheme() {
     ),
     progressIndicatorTheme: const ProgressIndicatorThemeData(
       color: CheriflixColors.accentRed,
-      linearTrackColor: Color(0x33111111),
-      circularTrackColor: Color(0x33111111),
+      linearTrackColor: Color(0x22FFFFFF),
+      circularTrackColor: Color(0x22FFFFFF),
     ),
     iconTheme: const IconThemeData(color: CheriflixColors.textPrimary),
   );
