@@ -703,7 +703,7 @@ class _DetailScreenState extends State<DetailScreen> {
           key: ValueKey<String>('detail_recommendation_${item.saveKey}_$index'),
           title: item.title,
           subtitle: item.metadataLabel,
-          imageUrl: item.posterUrl ?? item.backdropUrl,
+          imageUrl: item.backdropUrl ?? item.posterUrl,
           posterSurfaceKey: ValueKey<String>(
             'detail_recommendation_surface_${item.saveKey}_$index',
           ),
@@ -1635,7 +1635,7 @@ class _DetailIconActionButtonState extends State<_DetailIconActionButton> {
                 child: Icon(
                   widget.icon,
                   color: _focused
-                      ? Colors.black
+                      ? CheriflixColors.inkOnLight
                       : widget.selected
                           ? CheriflixColors.accentRed
                           : const Color(0xBBF0F0F0),

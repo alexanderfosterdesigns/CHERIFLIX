@@ -552,7 +552,7 @@ class CheriflixNavPill extends StatelessWidget {
       child: Text(
         label,
         style: CheriflixTypography.button.copyWith(
-          color: active ? Colors.black : CheriflixColors.textPrimary,
+          color: active ? CheriflixColors.inkOnLight : CheriflixColors.textPrimary,
           fontSize: 13,
           letterSpacing: 0.5,
         ),

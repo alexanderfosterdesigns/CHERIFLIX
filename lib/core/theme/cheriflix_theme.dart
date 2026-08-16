@@ -9,6 +9,9 @@ class CheriflixColors {
   static const Color accentRedMuted = Color(0xFFB20710);
   static const Color textPrimary = Color(0xFFF0F0F0);
   static const Color textSecondary = Color(0xFF7A7A7A);
+  // Dedicated ink for white/light controls. This is intentionally not
+  // inherited from the dark theme, so labels and icons always remain legible.
+  static const Color inkOnLight = Color(0xFF080808);
   static const Color outline = Color(0x30FFFFFF);
   static const Color focus = Color(0xFFE8E8E8);
   static const Color shadow = Color(0xB3000000);

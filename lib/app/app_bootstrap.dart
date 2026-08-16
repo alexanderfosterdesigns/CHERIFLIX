@@ -47,6 +47,7 @@ import '../core/services/subtitles/subdl_provider.dart';
 import '../core/services/subtitles/subtitle_cache_store.dart';
 import '../core/services/subtitles/subtitle_provider.dart';
 import '../core/services/update_service.dart';
+import '../core/theme/cheriflix_theme.dart';
 import '../core/utils/safe_logging.dart';
 import '../core/utils/release_date_utils.dart';
 import '../core/widgets/tv_text_editor_dialog.dart';
@@ -1764,7 +1765,7 @@ class _BootstrapErrorScreen extends StatelessWidget {
                   onPressed: onRetry,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
+                    foregroundColor: CheriflixColors.inkOnLight,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
                       vertical: 18,

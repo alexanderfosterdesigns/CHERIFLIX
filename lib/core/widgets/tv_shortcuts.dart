@@ -2087,14 +2087,14 @@ class _PosterActionPill extends StatelessWidget {
         children: <Widget>[
           Icon(
             icon,
-            color: selected ? Colors.black : const Color(0xBBF0F0F0),
+            color: selected ? CheriflixColors.inkOnLight : const Color(0xBBF0F0F0),
             size: 16,
           ),
           const SizedBox(width: 6),
           Text(
             label,
             style: CheriflixTypography.button.copyWith(
-              color: selected ? Colors.black : const Color(0xBBF0F0F0),
+              color: selected ? CheriflixColors.inkOnLight : const Color(0xBBF0F0F0),
               fontSize: 13,
               letterSpacing: 0.2,
             ),
@@ -2461,7 +2461,7 @@ _ResolvedButtonStyle _buttonStyle({
     case TvButtonVariant.light:
       return _ResolvedButtonStyle(
         backgroundColor: const Color(0xFFF0F0F0),
-        foregroundColor: Colors.black,
+        foregroundColor: CheriflixColors.inkOnLight,
         borderColor: focused ? CheriflixColors.focus : const Color(0xE0F0F0F0),
         borderWidth: focused ? 2.5 : 1,
         shadows: const <BoxShadow>[
@@ -2489,7 +2489,7 @@ _ResolvedButtonStyle _buttonStyle({
     case TvButtonVariant.media:
       return _ResolvedButtonStyle(
         backgroundColor: focused ? const Color(0xFFF0F0F0) : const Color(0xFF1A1A1A),
-        foregroundColor: focused ? Colors.black : CheriflixColors.textPrimary,
+        foregroundColor: focused ? CheriflixColors.inkOnLight : CheriflixColors.textPrimary,
         borderColor: focused ? const Color(0xF0FFFFFF) : const Color(0x22FFFFFF),
         borderWidth: focused ? 2.5 : 1,
         shadows: <BoxShadow>[
@@ -2524,7 +2524,7 @@ _ResolvedButtonStyle _buttonStyle({
     case TvButtonVariant.ghost:
       return _ResolvedButtonStyle(
         backgroundColor: selected ? const Color(0xFFF0F0F0) : const Color(0xFF0E0E0E),
-        foregroundColor: selected ? Colors.black : CheriflixColors.textPrimary,
+        foregroundColor: selected ? CheriflixColors.inkOnLight : CheriflixColors.textPrimary,
         borderColor: focused ? const Color(0x55FFFFFF) : const Color(0x18FFFFFF),
         borderWidth: focused ? 2 : 1,
         shadows: const <BoxShadow>[

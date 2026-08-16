@@ -1067,7 +1067,7 @@ class _PlayerChromeOverlayV2 extends StatelessWidget {
                               size: 52,
                               iconSize: 24,
                               backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
+                              foregroundColor: CheriflixColors.inkOnLight,
                               immediateActivation: true,
                               leftFallbackNodes: _fallbackLeft(
                                   _bottomFocusNodes, playPauseFocusNode),

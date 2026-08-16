@@ -409,28 +409,30 @@ class CheriflixTvLayout {
         wide: 14,
       );
 
+  /// Browsing artwork uses the same cinematic 16:9 shape as TMDb backdrops.
+  /// Keeping the collapsed and focused states in one aspect ratio prevents
+  /// the distracting portrait-to-landscape jump that the old cards made.
+  static const double mediaCardAspectRatio = 16 / 9;
+
   double get homeRailCardWidth => value(
-        compact: 184,
-        standard: 208,
-        wide: 232,
+        compact: 260,
+        standard: 292,
+        wide: 326,
       );
 
-  double get homeRailCardPosterHeight => value(
-        compact: 262,
-        standard: 294,
-        wide: 328,
-      );
+  double get homeRailCardPosterHeight =>
+      homeRailCardWidth / mediaCardAspectRatio;
 
   double get homeRailExpandedPosterHeight => value(
-        compact: 272,
-        standard: 308,
-        wide: 344,
+        compact: 156,
+        standard: 175,
+        wide: 195,
       );
 
   double get homeRailGap => value(
-        compact: 12,
-        standard: 13,
-        wide: 14,
+        compact: 14,
+        standard: 16,
+        wide: 18,
       );
 
   double get homeRailCollapsedTitleHeight => value(

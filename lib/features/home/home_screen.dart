@@ -2076,7 +2076,7 @@ class _RailCardData {
   final PlaybackProgressEntry? progress;
 
   String? get imageUrl =>
-      progress?.artworkUrl ?? summary.posterUrl ?? summary.backdropUrl;
+      summary.backdropUrl ?? progress?.artworkUrl ?? summary.posterUrl;
 }
 
 class _RailProgressOverlay extends StatelessWidget {

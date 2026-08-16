@@ -70,10 +70,10 @@ class _SearchLayoutMetrics {
         resultsPanelPadding: const EdgeInsets.fromLTRB(24, 22, 24, 24),
         keyboardGap: 8,
         resultGrid: const _SearchResultGridMetrics(
-          preferredTileWidth: 205,
-          posterAspectRatio: 1.33,
+          preferredTileWidth: 260,
+          posterAspectRatio: 9 / 16,
           detailsHeight: 74,
-          gridSpacing: 14,
+          gridSpacing: 16,
         ),
       );
     }
@@ -87,10 +87,10 @@ class _SearchLayoutMetrics {
         resultsPanelPadding: const EdgeInsets.fromLTRB(22, 20, 22, 22),
         keyboardGap: 8,
         resultGrid: const _SearchResultGridMetrics(
-          preferredTileWidth: 185,
-          posterAspectRatio: 1.33,
+          preferredTileWidth: 236,
+          posterAspectRatio: 9 / 16,
           detailsHeight: 72,
-          gridSpacing: 13,
+          gridSpacing: 15,
         ),
       );
     }
@@ -104,10 +104,10 @@ class _SearchLayoutMetrics {
         resultsPanelPadding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
         keyboardGap: 7,
         resultGrid: const _SearchResultGridMetrics(
-          preferredTileWidth: 190,
-          posterAspectRatio: 1.32,
+          preferredTileWidth: 220,
+          posterAspectRatio: 9 / 16,
           detailsHeight: 68,
-          gridSpacing: 12,
+          gridSpacing: 14,
         ),
       );
     }
@@ -120,10 +120,10 @@ class _SearchLayoutMetrics {
       resultsPanelPadding: const EdgeInsets.fromLTRB(15, 16, 15, 16),
       keyboardGap: compactHeight ? 5 : 7,
       resultGrid: const _SearchResultGridMetrics(
-        preferredTileWidth: 166,
-        posterAspectRatio: 1.32,
+        preferredTileWidth: 196,
+        posterAspectRatio: 9 / 16,
         detailsHeight: 64,
-        gridSpacing: 10,
+        gridSpacing: 12,
       ),
     );
   }
@@ -495,7 +495,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   return TvPosterButton(
                     title: item.title,
                     subtitle: item.metadataLabel,
-                    imageUrl: item.posterUrl ?? item.backdropUrl,
+                    imageUrl: item.backdropUrl ?? item.posterUrl,
                     width: cardWidth,
                     posterHeight: posterHeight,
                     expandedWidth: cardWidth,
